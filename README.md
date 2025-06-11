@@ -139,7 +139,7 @@ _Text Chat Interface &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/MS-Rex/nexora.git
+   git clone https://github.com/MS-Rex/nexora-app.git
    cd nexora
    ```
 
