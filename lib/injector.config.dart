@@ -36,11 +36,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(
       () => dioProvider.dio(gh<_i120.AuthInterceptor>()),
     );
-    gh.factory<_i817.AuthAPI>(
-      () => _i817.AuthAPI(gh<_i361.Dio>(), baseUrl: gh<String>()),
-    );
     gh.factory<_i781.ChatApi>(
       () => _i781.ChatApi(gh<_i361.Dio>(), baseUrl: gh<String>()),
+    );
+    gh.factory<_i817.AuthAPI>(
+      () => _i817.AuthAPI(gh<_i361.Dio>(), baseUrl: gh<String>()),
     );
     gh.lazySingleton<_i1041.ChatRepository>(
       () => _i1041.ChatRepositoryImpl(gh<_i781.ChatApi>()),

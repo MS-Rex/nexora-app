@@ -26,12 +26,31 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 124, 58, 237),
-      body: Center(
-        child: Image.asset(
-          'assets/images/logo.png', // Add your logo image in the assets folder
-          height: 150,
-          width: 150,
-        ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Image.asset(
+              'assets/images/logo.png',
+              height: 150,
+              width: 150,
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: const Text(
+                'v1.0.0',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
