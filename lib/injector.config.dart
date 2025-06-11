@@ -19,7 +19,9 @@ import 'core/common/storage/token_service.dart' as _i942;
 import 'feature/auth/api/auth_api.dart' as _i817;
 import 'feature/chat/api/chat_api.dart' as _i781;
 import 'feature/chat/repository/chat_repository.dart' as _i1041;
+import 'feature/chat/services/voice_chat_service.dart' as _i816;
 import 'feature/chat/ui/bloc/chat_bloc.dart' as _i992;
+import 'feature/chat/ui/bloc/voice_chat_bloc.dart' as _i359;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -29,9 +31,13 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final dioProvider = _$DioProvider();
+    gh.factory<_i816.VoiceChatService>(() => _i816.VoiceChatService());
     gh.lazySingleton<_i942.TokenService>(() => _i942.TokenService());
     gh.lazySingleton<_i120.AuthInterceptor>(
       () => _i120.AuthInterceptor(gh<_i942.TokenService>()),
+    );
+    gh.factory<_i359.VoiceChatBloc>(
+      () => _i359.VoiceChatBloc(gh<_i816.VoiceChatService>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => dioProvider.dio(gh<_i120.AuthInterceptor>()),

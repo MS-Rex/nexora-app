@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../../core/config/routes/app_routes.dart';
 
 @RoutePage()
 class ChatViewPage extends StatefulWidget {
@@ -55,12 +56,15 @@ class _ChatViewPageState extends State<ChatViewPage> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              reverse: true,
-              padding: const EdgeInsets.all(8.0),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) => _messages[index],
-            ),
+            child:
+                _messages.isEmpty
+                    ? _buildWelcomeContent()
+                    : ListView.builder(
+                      reverse: true,
+                      padding: const EdgeInsets.all(8.0),
+                      itemCount: _messages.length,
+                      itemBuilder: (context, index) => _messages[index],
+                    ),
           ),
           Container(
             decoration: BoxDecoration(
@@ -88,6 +92,13 @@ class _ChatViewPageState extends State<ChatViewPage> {
                     ),
                   ),
                   IconButton(
+                    icon: const Icon(Iconsax.microphone_2),
+                    onPressed: () {
+                      // Navigate to voice chat page
+                      context.router.push(const VoiceChatRoute());
+                    },
+                  ),
+                  IconButton(
                     icon: const Icon(Iconsax.send_1),
                     onPressed: () {
                       if (_messageController.text.isNotEmpty) {
@@ -97,6 +108,72 @@ class _ChatViewPageState extends State<ChatViewPage> {
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // NEXORA Logo/Text
+          Text(
+            "NEXORA",
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 80),
+          // Welcome suggestion widget
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              color: const Color(0xFFE8E3FF), // Light purple background
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(
+                      0xFF7C3AED,
+                    ), // Purple background for icon
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.lightbulb_outline,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    "Hi, Ask me anything about the Campus",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

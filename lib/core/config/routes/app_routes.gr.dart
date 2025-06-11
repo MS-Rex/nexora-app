@@ -133,3 +133,35 @@ class SplashRoute extends PageRouteInfo<void> {
     },
   );
 }
+
+/// generated route for
+/// [VoiceChatScreen]
+class VoiceChatRoute extends PageRouteInfo<void> {
+  const VoiceChatRoute({List<PageRouteInfo>? children})
+    : super(VoiceChatRoute.name, initialChildren: children);
+
+  static const String name = 'VoiceChatRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const VoiceChatScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [VoiceChatScreenRefactored]
+class VoiceChatRouteRefactored extends PageRouteInfo<void> {
+  const VoiceChatRouteRefactored({List<PageRouteInfo>? children})
+    : super(VoiceChatRouteRefactored.name, initialChildren: children);
+
+  static const String name = 'VoiceChatRouteRefactored';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const VoiceChatScreenRefactored();
+    },
+  );
+}
