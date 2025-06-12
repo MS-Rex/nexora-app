@@ -8,6 +8,7 @@ environment:
   sdk: ">=3.7.0 <3.8.0"
 
 dependencies:
+  sentry_flutter: ^8.14.2
   auto_route: ^10.0.1
   flutter:
     sdk: flutter
@@ -31,6 +32,7 @@ dependencies:
   flutter_secure_storage: ^8.1.0
 
 dev_dependencies:
+  sentry_dart_plugin: ^2.4.1
   flutter_test:
     sdk: flutter
 
@@ -49,3 +51,9 @@ flutter:
     - assets/
     - assets/images/
     - .env
+
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: true
+  project: nexora-app
+  org: nexora-w2

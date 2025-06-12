@@ -3,20 +3,28 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nexora/injector.dart';
 import 'core/config/routes/app_routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-const String _baseUrl = 'https://nexora.msanjana.com/';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  // Register the base URL before initializing dependencies
+
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+
   if (!getIt.isRegistered<String>()) {
-    getIt.registerSingleton<String>(_baseUrl);
+    getIt.registerSingleton<String>(baseUrl);
   }
-  // debugPrintGestureArenaDiagnostics = true;
   configureDependencies();
   debugProfileBuildsEnabled = true;
-  runApp(const MyApp());
+  await SentryFlutter.init((options) {
+    options.dsn = dotenv.env['SENTRY_DSN'] ?? '';
+    // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+    // We recommend adjusting this value in production.
+    options.tracesSampleRate = 1.0;
+    // The sampling rate for profiling is relative to tracesSampleRate
+    // Setting to 1.0 will profile 100% of sampled transactions:
+    options.profilesSampleRate = 1.0;
+  }, appRunner: () => runApp(SentryWidget(child: const MyApp())));
 }
 
 class MyApp extends StatelessWidget {
