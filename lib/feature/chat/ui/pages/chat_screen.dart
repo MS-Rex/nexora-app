@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/routes/app_routes.dart';
 import '../../../../feature/auth/bloc/auth_bloc.dart';
+import '../../../../feature/chat/ui/bloc/chat_bloc.dart';
+import '../../../../feature/chat/api/chat_api.dart' as api;
 import '../../../../injector.dart';
 
 @RoutePage()
@@ -18,22 +20,27 @@ class _ChatViewPageState extends State<ChatViewPage> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
   final AuthBloc _authBloc = getIt<AuthBloc>();
+  final ChatBloc _chatBloc = getIt<ChatBloc>();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _messageController.dispose();
+    _chatBloc.close();
     super.dispose();
   }
 
   void _handleSubmitted(String text) {
+    if (text.trim().isEmpty) return;
+
     _messageController.clear();
     setState(() {
       _messages.insert(0, ChatMessage(text: text, isUser: true));
-      _messages.insert(
-        0,
-        ChatMessage(text: "Hello! How may I assist you today?", isUser: false),
-      );
+      _isLoading = true;
     });
+
+    // Send message through bloc
+    _chatBloc.add(ChatEvent.sendMessage(text));
   }
 
   void _showLogoutConfirmationDialog() {
@@ -73,26 +80,64 @@ class _ChatViewPageState extends State<ChatViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      bloc: _authBloc,
-      listener: (context, state) {
-        if (state is LogoutSuccess) {
-          // Navigate to login page on successful logout
-          context.router.pushAndPopUntil(
-            const LoginRoute(),
-            predicate: (route) => false,
-          );
-        } else if (state is AuthError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          bloc: _authBloc,
+          listener: (context, state) {
+            if (state is LogoutSuccess) {
+              // Navigate to login page on successful logout
+              context.router.pushAndPopUntil(
+                const LoginRoute(),
+                predicate: (route) => false,
+              );
+            } else if (state is AuthError) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
+            }
+          },
+        ),
+        BlocListener<ChatBloc, ChatState>(
+          bloc: _chatBloc,
+          listener: (context, state) {
+            setState(() {
+              _isLoading = false;
+            });
+
+            // Temporary approach while build runner completes
+            if (state.toString().contains('success')) {
+              final replyMatch = RegExp(
+                r'reply: ([^)]+)',
+              ).firstMatch(state.toString());
+              if (replyMatch != null) {
+                final reply = replyMatch.group(1)!;
+                setState(() {
+                  _messages.insert(0, ChatMessage(text: reply, isUser: false));
+                });
+              }
+            } else if (state.toString().contains('failure')) {
+              final errorMatch = RegExp(
+                r'error: ([^)]+)',
+              ).firstMatch(state.toString());
+              if (errorMatch != null) {
+                final error = errorMatch.group(1)!;
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $error')));
+              }
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.chat_bubble_rounded),
-            onPressed: () {},
+            onPressed: () {
+              // Navigate to chat history page
+              context.router.push(const ChatHistoryRoute());
+            },
           ),
           centerTitle: true,
           title: Text(
