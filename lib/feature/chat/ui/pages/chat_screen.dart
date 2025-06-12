@@ -1,7 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/routes/app_routes.dart';
+import '../../../../feature/auth/bloc/auth_bloc.dart';
+import '../../../../injector.dart';
 
 @RoutePage()
 class ChatViewPage extends StatefulWidget {
@@ -14,6 +17,7 @@ class ChatViewPage extends StatefulWidget {
 class _ChatViewPageState extends State<ChatViewPage> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
+  final AuthBloc _authBloc = getIt<AuthBloc>();
 
   @override
   void dispose() {
@@ -32,85 +36,139 @@ class _ChatViewPageState extends State<ChatViewPage> {
     });
   }
 
+  void _showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Color.fromARGB(255, 124, 58, 237)),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _handleLogout();
+              },
+              child: Text(
+                'Logout',
+                style: TextStyle(color: Color.fromARGB(255, 124, 58, 237)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleLogout() {
+    _authBloc.add(LogoutRequested());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.chat_bubble_rounded),
-          onPressed: () {},
-        ),
-        centerTitle: true,
-        title: Text(
-          "NEXORA",
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
+    return BlocListener<AuthBloc, AuthState>(
+      bloc: _authBloc,
+      listener: (context, state) {
+        if (state is LogoutSuccess) {
+          // Navigate to login page on successful logout
+          context.router.pushAndPopUntil(
+            const LoginRoute(),
+            predicate: (route) => false,
+          );
+        } else if (state is AuthError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.chat_bubble_rounded),
+            onPressed: () {},
           ),
-        ),
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.logout_rounded)),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child:
-                _messages.isEmpty
-                    ? _buildWelcomeContent()
-                    : ListView.builder(
-                      reverse: true,
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) => _messages[index],
-                    ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              border: Border(
-                top: BorderSide(color: Theme.of(context).dividerColor),
-              ),
+          centerTitle: true,
+          title: Text(
+            "NEXORA",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 4.0,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message...',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(12),
+          ),
+          actions: [
+            IconButton(
+              onPressed: _showLogoutConfirmationDialog,
+              icon: const Icon(Icons.logout_rounded),
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child:
+                  _messages.isEmpty
+                      ? _buildWelcomeContent()
+                      : ListView.builder(
+                        reverse: true,
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) => _messages[index],
                       ),
-                      onSubmitted: _handleSubmitted,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                border: Border(
+                  top: BorderSide(color: Theme.of(context).dividerColor),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message...',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(12),
+                        ),
+                        onSubmitted: _handleSubmitted,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Iconsax.microphone_2),
-                    onPressed: () {
-                      // Navigate to voice chat page
-                      context.router.push(const VoiceChatRoute());
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Iconsax.send_1),
-                    onPressed: () {
-                      if (_messageController.text.isNotEmpty) {
-                        _handleSubmitted(_messageController.text);
-                      }
-                    },
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Iconsax.microphone_2),
+                      onPressed: () {
+                        // Navigate to voice chat page
+                        context.router.push(const VoiceChatRoute());
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Iconsax.send_1),
+                      onPressed: () {
+                        if (_messageController.text.isNotEmpty) {
+                          _handleSubmitted(_messageController.text);
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

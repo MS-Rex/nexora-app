@@ -8,9 +8,16 @@ abstract class DioProvider {
   Dio dio(AuthInterceptor authInterceptor) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api.example.com',
+        baseUrl: 'https://nexora.msanjana.com/',
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
+        contentType: 'application/json',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        followRedirects: false,
+        validateStatus: (status) => status! < 500,
       ),
     );
 

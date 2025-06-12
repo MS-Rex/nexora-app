@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:nexora/feature/auth/repository/auth_repository.dart';
+import 'package:nexora/injector.dart';
 
 import '../../../../core/config/routes/app_routes.dart';
 
@@ -12,14 +14,32 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  final AuthRepository _authRepository = getIt<AuthRepository>();
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    _checkAuthAndNavigate();
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    final hasToken = await _authRepository.hasToken();
+
+    if (hasToken) {
+      // User has a token, navigate to chat screen
+      AutoRouter.of(
+        context,
+      ).pushAndPopUntil(const ChatViewRoute(), predicate: (route) => false);
+    } else {
+      // No token, navigate to login screen
       AutoRouter.of(
         context,
       ).pushAndPopUntil(LoginRoute(), predicate: (route) => false);
-    });
+    }
   }
 
   @override
