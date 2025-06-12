@@ -92,9 +92,16 @@ class VoiceChatService {
   Future<void> connectWebSocket() async {
     try {
       String baseUrl =
-          dotenv.env['BASE_URL'] ?? 'http://192.168.1.156:8000/api/v1';
-      final wsUrl =
-          baseUrl.replaceFirst('http', 'ws') + '/voice-chat/$_clientId';
+          dotenv.env['VOICE_AI_URL'] ?? 'http://192.168.1.156/api/v1';
+
+      // Properly construct WebSocket URL
+
+      String wsUrl = '$baseUrl/$_clientId';
+      // '$wsScheme://${baseUri.host}:$wsPort/voice-chat/$_clientId';
+
+      print('Base URL: $baseUrl');
+      print('Constructed WebSocket URL: $wsUrl');
+      print('Client ID: $_clientId');
 
       _updateState(_state.copyWith(statusText: "Connecting..."));
 
@@ -210,6 +217,11 @@ class VoiceChatService {
 
   /// Handle WebSocket errors
   void _handleWebSocketError(error) {
+    print('❌ WebSocket Error Details:');
+    print('   Error type: ${error.runtimeType}');
+    print('   Error message: $error');
+    print('   Client ID: $_clientId');
+
     _updateState(
       _state.copyWith(
         isConnected: false,

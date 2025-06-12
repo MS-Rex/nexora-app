@@ -88,12 +88,13 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
     try {
       String baseUrl;
 
-      baseUrl = dotenv.env['BASE_URL'] ?? 'http://192.168.1.156:8000/api/v1';
+      baseUrl = dotenv.env['VOICE_AI_URL'] ?? 'http://192.168.1.156/api/v1';
 
-      final wsUrl =
-          baseUrl.replaceFirst('http', 'ws') + '/voice-chat/$_clientId';
+      String wsUrl = '$baseUrl/$_clientId';
+      // '$wsScheme://${baseUri.host}:$wsPort/voice-chat/$_clientId';
+
       print("Base URL: $baseUrl"); // Debug log
-      print("WebSocket URL: $wsUrl"); // Debug log
+      print("Constructed WebSocket URL: $wsUrl"); // Debug log
       print("Client ID: $_clientId"); // Debug log
 
       if (mounted) {

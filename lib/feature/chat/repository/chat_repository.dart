@@ -19,7 +19,7 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<ChatResponse> sendMessage(String message, {String? sessionId}) async {
     final response = await _chatApi.sendMessage(
-      ChatRequest(message: message, sessionId: "test_session_200"),
+      ChatRequest(message: message, sessionId: sessionId ?? ""),
     );
     return response;
   }
