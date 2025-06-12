@@ -23,8 +23,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(const ChatState.loading());
 
     try {
-      final reply = await _chatRepository.sendMessage(event.message);
-      emit(ChatState.success(reply));
+      final response = await _chatRepository.sendMessage(event.message);
+      emit(ChatState.success(response.response));
     } catch (e) {
       emit(ChatState.failure(e.toString()));
     }

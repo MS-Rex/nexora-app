@@ -47,3 +47,7 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Sentry related
+sentry-wizard
+sentry.properties

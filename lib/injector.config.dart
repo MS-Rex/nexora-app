@@ -20,6 +20,7 @@ import 'feature/auth/api/auth_api.dart' as _i817;
 import 'feature/auth/bloc/auth_bloc.dart' as _i37;
 import 'feature/auth/repository/auth_repository.dart' as _i577;
 import 'feature/chat/api/chat_api.dart' as _i781;
+import 'feature/chat/bloc/chat_history_bloc.dart' as _i556;
 import 'feature/chat/repository/chat_repository.dart' as _i1041;
 import 'feature/chat/services/voice_chat_service.dart' as _i816;
 import 'feature/chat/ui/bloc/chat_bloc.dart' as _i992;
@@ -62,6 +63,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i992.ChatBloc>(
       () => _i992.ChatBloc(gh<_i1041.ChatRepository>()),
+    );
+    gh.factory<_i556.ChatHistoryBloc>(
+      () => _i556.ChatHistoryBloc(gh<_i1041.ChatRepository>()),
     );
     return this;
   }
