@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatRequest {
 
- String get message;
+ String get message;@JsonKey(name: 'session_id') String? get sessionId;
 /// Create a copy of ChatRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $ChatRequestCopyWith<ChatRequest> get copyWith => _$ChatRequestCopyWithImpl<Chat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatRequest&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatRequest&&(identical(other.message, message) || other.message == message)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,message);
+int get hashCode => Object.hash(runtimeType,message,sessionId);
 
 @override
 String toString() {
-  return 'ChatRequest(message: $message)';
+  return 'ChatRequest(message: $message, sessionId: $sessionId)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $ChatRequestCopyWith<$Res>  {
   factory $ChatRequestCopyWith(ChatRequest value, $Res Function(ChatRequest) _then) = _$ChatRequestCopyWithImpl;
 @useResult
 $Res call({
- String message
+ String message,@JsonKey(name: 'session_id') String? sessionId
 });
 
 
@@ -66,10 +66,11 @@ class _$ChatRequestCopyWithImpl<$Res>
 
 /// Create a copy of ChatRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? message = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? message = null,Object? sessionId = freezed,}) {
   return _then(_self.copyWith(
 message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+as String,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -80,10 +81,11 @@ as String,
 @JsonSerializable()
 
 class _ChatRequest implements ChatRequest {
-  const _ChatRequest({required this.message});
+  const _ChatRequest({required this.message, @JsonKey(name: 'session_id') this.sessionId});
   factory _ChatRequest.fromJson(Map<String, dynamic> json) => _$ChatRequestFromJson(json);
 
 @override final  String message;
+@override@JsonKey(name: 'session_id') final  String? sessionId;
 
 /// Create a copy of ChatRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -98,16 +100,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatRequest&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatRequest&&(identical(other.message, message) || other.message == message)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,message);
+int get hashCode => Object.hash(runtimeType,message,sessionId);
 
 @override
 String toString() {
-  return 'ChatRequest(message: $message)';
+  return 'ChatRequest(message: $message, sessionId: $sessionId)';
 }
 
 
@@ -118,7 +120,7 @@ abstract mixin class _$ChatRequestCopyWith<$Res> implements $ChatRequestCopyWith
   factory _$ChatRequestCopyWith(_ChatRequest value, $Res Function(_ChatRequest) _then) = __$ChatRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String message
+ String message,@JsonKey(name: 'session_id') String? sessionId
 });
 
 
@@ -135,10 +137,11 @@ class __$ChatRequestCopyWithImpl<$Res>
 
 /// Create a copy of ChatRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = null,Object? sessionId = freezed,}) {
   return _then(_ChatRequest(
 message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+as String,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

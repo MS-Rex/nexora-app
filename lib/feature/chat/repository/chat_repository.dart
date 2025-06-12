@@ -1,9 +1,13 @@
 import 'package:injectable/injectable.dart';
 import '../api/chat_api.dart';
 import '../api/models/chat_request.dart';
+import '../api/models/chat_response.dart';
+import '../api/models/chat_history.dart';
 
 abstract class ChatRepository {
-  Future<String> sendMessage(String message);
+  Future<ChatResponse> sendMessage(String message, {String? sessionId});
+  Future<List<ChatHistory>> getChatHistory();
+  Future<List<ChatMessage>> getChatBySessionId(String sessionId);
 }
 
 @LazySingleton(as: ChatRepository)
@@ -13,8 +17,21 @@ class ChatRepositoryImpl implements ChatRepository {
   ChatRepositoryImpl(this._chatApi);
 
   @override
-  Future<String> sendMessage(String message) async {
-    final response = await _chatApi.sendMessage(ChatRequest(message: message));
-    return response.reply;
+  Future<ChatResponse> sendMessage(String message, {String? sessionId}) async {
+    final response = await _chatApi.sendMessage(
+      ChatRequest(message: message, sessionId: "test_session_200"),
+    );
+    return response;
+  }
+
+  @override
+  Future<List<ChatHistory>> getChatHistory() async {
+    final response = await _chatApi.getChatHistory();
+    return response.chatHistory;
+  }
+
+  @override
+  Future<List<ChatMessage>> getChatBySessionId(String sessionId) async {
+    return await _chatApi.getChatBySessionId(sessionId);
   }
 }
