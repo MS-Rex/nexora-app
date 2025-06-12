@@ -60,18 +60,51 @@ class LoginRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [OtpVerifyPage]
-class OtpVerifyRoute extends PageRouteInfo<void> {
-  const OtpVerifyRoute({List<PageRouteInfo>? children})
-    : super(OtpVerifyRoute.name, initialChildren: children);
+class OtpVerifyRoute extends PageRouteInfo<OtpVerifyRouteArgs> {
+  OtpVerifyRoute({Key? key, String email = '', List<PageRouteInfo>? children})
+    : super(
+        OtpVerifyRoute.name,
+        args: OtpVerifyRouteArgs(key: key, email: email),
+        rawQueryParams: {'email': email},
+        initialChildren: children,
+      );
 
   static const String name = 'OtpVerifyRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const OtpVerifyPage();
+      final queryParams = data.queryParams;
+      final args = data.argsAs<OtpVerifyRouteArgs>(
+        orElse:
+            () => OtpVerifyRouteArgs(email: queryParams.getString('email', '')),
+      );
+      return OtpVerifyPage(key: args.key, email: args.email);
     },
   );
+}
+
+class OtpVerifyRouteArgs {
+  const OtpVerifyRouteArgs({this.key, this.email = ''});
+
+  final Key? key;
+
+  final String email;
+
+  @override
+  String toString() {
+    return 'OtpVerifyRouteArgs{key: $key, email: $email}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! OtpVerifyRouteArgs) return false;
+    return key == other.key && email == other.email;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ email.hashCode;
 }
 
 /// generated route for

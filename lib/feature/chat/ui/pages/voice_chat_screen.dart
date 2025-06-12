@@ -150,11 +150,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       if (mounted) {
         setState(() {
           _isConnected = false;
-          _statusText = "Connection failed";
+          _statusText = "Failed to connect. Tap to retry.";
         });
-        _showErrorDialog(
-          "Failed to connect: $e\n\nMake sure your backend is running on localhost:8000",
-        );
       }
     }
   }
@@ -220,7 +217,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           break;
         case 'error':
           if (mounted) {
-            _showErrorDialog(message['message'] ?? 'Unknown error');
+            // _showErrorDialog(message['message'] ?? 'Unknown error');
             setState(() {
               _statusText = "Error occurred - Try again";
             });
@@ -332,6 +329,13 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       }
       if (_isConnected) {
         await _startRecording();
+      } else {
+        // If still not connected, update status
+        if (mounted) {
+          setState(() {
+            _statusText = "Tap again to retry connection";
+          });
+        }
       }
     }
   }
@@ -367,10 +371,18 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           });
         }
       } else {
-        _showErrorDialog("Microphone permission not granted");
+        if (mounted) {
+          setState(() {
+            _statusText = "Microphone permission not granted";
+          });
+        }
       }
     } catch (e) {
-      _showErrorDialog("Failed to start recording: $e");
+      if (mounted) {
+        setState(() {
+          _statusText = "Failed to start recording. Try again.";
+        });
+      }
     }
   }
 
@@ -424,7 +436,11 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
 
             if (audioBytes.isEmpty) {
               print("❌ Audio file is empty");
-              _showErrorDialog("Audio file is empty");
+              if (mounted) {
+                setState(() {
+                  _statusText = "Failed to record. Try again.";
+                });
+              }
               return;
             }
 
@@ -450,15 +466,27 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
             print("🔍 Audio file deleted");
           } catch (fileError) {
             print("❌ Error reading audio file: $fileError");
-            _showErrorDialog("Failed to read audio file: $fileError");
+            if (mounted) {
+              setState(() {
+                _statusText = "Processing error. Try again.";
+              });
+            }
           }
         } else {
           print("❌ Audio file does not exist at path: ${audioFile.path}");
-          _showErrorDialog("Audio file not found");
+          if (mounted) {
+            setState(() {
+              _statusText = "Recording not found. Try again.";
+            });
+          }
         }
       } catch (e) {
         print("❌ Error sending complete audio: $e");
-        _showErrorDialog("Failed to send audio: $e");
+        if (mounted) {
+          setState(() {
+            _statusText = "Failed to send audio. Try again.";
+          });
+        }
       }
     } else {
       print("❌ Missing requirements:");
@@ -466,9 +494,11 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         "   _currentRecordingPath is null: ${_currentRecordingPath == null}",
       );
       print("   _webSocketChannel is null: ${_webSocketChannel == null}");
-      _showErrorDialog(
-        "Cannot send audio: missing recording path or WebSocket connection",
-      );
+      if (mounted) {
+        setState(() {
+          _statusText = "Connection issue. Tap to retry.";
+        });
+      }
     }
   }
 
@@ -559,7 +589,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         print("Test message sent: ${jsonEncode(testMessage)}");
       } catch (e) {
         print("Error sending test message: $e");
-        _showErrorDialog("Failed to send test message: $e");
+        // _showErrorDialog("Failed to send test message: $e");
       }
     } else {
       _showErrorDialog("Not connected to server. Please connect first.");

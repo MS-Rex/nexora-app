@@ -6,11 +6,11 @@ import 'models/chat_response.dart';
 part 'chat_api.g.dart';
 
 @injectable
-@RestApi(baseUrl: "https://api.example.com") // Replace with your backend URL
+@RestApi()
 abstract class ChatApi {
   @factoryMethod
   factory ChatApi(Dio dio, {String baseUrl}) = _ChatApi;
 
-  @POST("/chat")
+  @POST("api/mobile-api/message/send")
   Future<ChatResponse> sendMessage(@Body() ChatRequest request);
 }
