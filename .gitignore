@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 .env
+sentry.properties
+sentry-wizard
 
 # IntelliJ related
 *.iml
