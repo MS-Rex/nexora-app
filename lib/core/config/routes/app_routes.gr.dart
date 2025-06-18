@@ -28,18 +28,48 @@ class ChatHistoryRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [ChatViewPage]
-class ChatViewRoute extends PageRouteInfo<void> {
-  const ChatViewRoute({List<PageRouteInfo>? children})
-    : super(ChatViewRoute.name, initialChildren: children);
+class ChatViewRoute extends PageRouteInfo<ChatViewRouteArgs> {
+  ChatViewRoute({Key? key, String? sessionId, List<PageRouteInfo>? children})
+    : super(
+        ChatViewRoute.name,
+        args: ChatViewRouteArgs(key: key, sessionId: sessionId),
+        initialChildren: children,
+      );
 
   static const String name = 'ChatViewRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const ChatViewPage();
+      final args = data.argsAs<ChatViewRouteArgs>(
+        orElse: () => const ChatViewRouteArgs(),
+      );
+      return ChatViewPage(key: args.key, sessionId: args.sessionId);
     },
   );
+}
+
+class ChatViewRouteArgs {
+  const ChatViewRouteArgs({this.key, this.sessionId});
+
+  final Key? key;
+
+  final String? sessionId;
+
+  @override
+  String toString() {
+    return 'ChatViewRouteArgs{key: $key, sessionId: $sessionId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ChatViewRouteArgs) return false;
+    return key == other.key && sessionId == other.sessionId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ sessionId.hashCode;
 }
 
 /// generated route for

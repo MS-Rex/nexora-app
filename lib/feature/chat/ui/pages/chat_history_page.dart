@@ -57,7 +57,9 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
                       trailing: Text(chat.timestamp),
                       onTap: () {
                         // Navigate to the chat screen with the selected chat
-                        context.router.push(const ChatViewRoute());
+                        context.router.push(
+                          ChatViewRoute(sessionId: chat.sessionId),
+                        );
                       },
                     );
                   },
@@ -70,7 +72,7 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to a new chat
-          context.router.push(const ChatViewRoute());
+          context.router.push(ChatViewRoute());
         },
         child: const Icon(Icons.add),
       ),

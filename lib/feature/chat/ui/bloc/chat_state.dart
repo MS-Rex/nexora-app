@@ -6,4 +6,7 @@ class ChatState with _$ChatState {
   const factory ChatState.loading() = _Loading;
   const factory ChatState.success(String reply) = _Success;
   const factory ChatState.failure(String error) = _Failure;
+  const factory ChatState.chatHistoryLoaded(List<ChatMessage> messages) =
+      _ChatHistoryLoaded;
+  const factory ChatState.chatHistoryLoading() = _ChatHistoryLoading;
 }

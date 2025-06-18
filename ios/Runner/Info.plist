@@ -49,5 +49,13 @@
 	<string>This app needs access to microphone for voice chat with AI</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app needs access to speech recognition for voice chat with AI</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>http</string>
+		<string>https</string>
+		<string>mailto</string>
+		<string>tel</string>
+		<string>sms</string>
+	</array>
 </dict>
 </plist>

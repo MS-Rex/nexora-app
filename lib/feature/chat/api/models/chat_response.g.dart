@@ -6,21 +6,20 @@ part of 'chat_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_ChatResponse _$ChatResponseFromJson(Map<String, dynamic> json) =>
-    _ChatResponse(
-      response: json['response'] as String,
-      agentName: json['agent_name'] as String,
-      intent: json['intent'] as String,
-      agentUsed: json['agent_used'] as String,
-      success: json['success'] as bool,
-      error: json['error'] as String?,
-      timestamp: json['timestamp'] as String,
-      sessionId: json['session_id'] as String,
-    );
+ChatResponse _$ChatResponseFromJson(Map<String, dynamic> json) => ChatResponse(
+  response: json['message'] as String,
+  agentName: json['agent_name'] as String? ?? '',
+  intent: json['intent'] as String? ?? '',
+  agentUsed: json['agent_used'] as String? ?? '',
+  success: json['success'] as bool? ?? true,
+  error: json['error'] as String?,
+  timestamp: json['timestamp'] as String? ?? '',
+  sessionId: json['session_id'] as String? ?? '',
+);
 
-Map<String, dynamic> _$ChatResponseToJson(_ChatResponse instance) =>
+Map<String, dynamic> _$ChatResponseToJson(ChatResponse instance) =>
     <String, dynamic>{
-      'response': instance.response,
+      'message': instance.response,
       'agent_name': instance.agentName,
       'intent': instance.intent,
       'agent_used': instance.agentUsed,

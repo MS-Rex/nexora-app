@@ -33,7 +33,7 @@ class _SplashPageState extends State<SplashPage> {
       // User has a token, navigate to chat screen
       AutoRouter.of(
         context,
-      ).pushAndPopUntil(const ChatViewRoute(), predicate: (route) => false);
+      ).pushAndPopUntil(ChatViewRoute(), predicate: (route) => false);
     } else {
       // No token, navigate to login screen
       AutoRouter.of(

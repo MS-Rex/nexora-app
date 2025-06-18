@@ -79,7 +79,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
             if (state is AuthSuccess) {
               // Navigate to Chat page on successful verification and clear the stack
               context.router.pushAndPopUntil(
-                const ChatViewRoute(),
+                ChatViewRoute(),
                 predicate: (route) => false,
               );
             } else if (state is AuthError) {

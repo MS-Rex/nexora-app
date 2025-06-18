@@ -27,7 +27,7 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<List<ChatHistory>> getChatHistory() async {
     final response = await _chatApi.getChatHistory();
-    return response.chatHistory;
+    return response;
   }
 
   @override

@@ -16,6 +16,7 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'core/common/network/auth_interceptor.dart' as _i120;
 import 'core/common/network/dio.dart' as _i627;
 import 'core/common/storage/token_service.dart' as _i942;
+import 'core/localization/localization_service.dart' as _i403;
 import 'feature/auth/api/auth_api.dart' as _i817;
 import 'feature/auth/bloc/auth_bloc.dart' as _i37;
 import 'feature/auth/repository/auth_repository.dart' as _i577;
@@ -35,6 +36,7 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final dioProvider = _$DioProvider();
     gh.factory<_i816.VoiceChatService>(() => _i816.VoiceChatService());
+    gh.singleton<_i403.LocalizationService>(() => _i403.LocalizationService());
     gh.lazySingleton<_i942.TokenService>(() => _i942.TokenService());
     gh.lazySingleton<_i120.AuthInterceptor>(
       () => _i120.AuthInterceptor(gh<_i942.TokenService>()),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatEvent {
 
- String get message;
+ String? get sessionId;
 /// Create a copy of ChatEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ChatEventCopyWith<ChatEvent> get copyWith => _$ChatEventCopyWithImpl<ChatEvent>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatEvent&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatEvent&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,message);
+int get hashCode => Object.hash(runtimeType,sessionId);
 
 @override
 String toString() {
-  return 'ChatEvent(message: $message)';
+  return 'ChatEvent(sessionId: $sessionId)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ChatEventCopyWith<$Res>  {
   factory $ChatEventCopyWith(ChatEvent value, $Res Function(ChatEvent) _then) = _$ChatEventCopyWithImpl;
 @useResult
 $Res call({
- String message
+ String sessionId
 });
 
 
@@ -63,9 +63,9 @@ class _$ChatEventCopyWithImpl<$Res>
 
 /// Create a copy of ChatEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? message = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? sessionId = null,}) {
   return _then(_self.copyWith(
-message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+sessionId: null == sessionId ? _self.sessionId! : sessionId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -77,10 +77,11 @@ as String,
 
 
 class _SendMessage implements ChatEvent {
-  const _SendMessage(this.message);
+  const _SendMessage(this.message, {this.sessionId});
   
 
-@override final  String message;
+ final  String message;
+@override final  String? sessionId;
 
 /// Create a copy of ChatEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -92,16 +93,16 @@ _$SendMessageCopyWith<_SendMessage> get copyWith => __$SendMessageCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SendMessage&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SendMessage&&(identical(other.message, message) || other.message == message)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,message);
+int get hashCode => Object.hash(runtimeType,message,sessionId);
 
 @override
 String toString() {
-  return 'ChatEvent.sendMessage(message: $message)';
+  return 'ChatEvent.sendMessage(message: $message, sessionId: $sessionId)';
 }
 
 
@@ -112,7 +113,7 @@ abstract mixin class _$SendMessageCopyWith<$Res> implements $ChatEventCopyWith<$
   factory _$SendMessageCopyWith(_SendMessage value, $Res Function(_SendMessage) _then) = __$SendMessageCopyWithImpl;
 @override @useResult
 $Res call({
- String message
+ String message, String? sessionId
 });
 
 
@@ -129,9 +130,76 @@ class __$SendMessageCopyWithImpl<$Res>
 
 /// Create a copy of ChatEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = null,Object? sessionId = freezed,}) {
   return _then(_SendMessage(
 null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _LoadChatHistory implements ChatEvent {
+  const _LoadChatHistory(this.sessionId);
+  
+
+@override final  String sessionId;
+
+/// Create a copy of ChatEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoadChatHistoryCopyWith<_LoadChatHistory> get copyWith => __$LoadChatHistoryCopyWithImpl<_LoadChatHistory>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadChatHistory&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,sessionId);
+
+@override
+String toString() {
+  return 'ChatEvent.loadChatHistory(sessionId: $sessionId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LoadChatHistoryCopyWith<$Res> implements $ChatEventCopyWith<$Res> {
+  factory _$LoadChatHistoryCopyWith(_LoadChatHistory value, $Res Function(_LoadChatHistory) _then) = __$LoadChatHistoryCopyWithImpl;
+@override @useResult
+$Res call({
+ String sessionId
+});
+
+
+
+
+}
+/// @nodoc
+class __$LoadChatHistoryCopyWithImpl<$Res>
+    implements _$LoadChatHistoryCopyWith<$Res> {
+  __$LoadChatHistoryCopyWithImpl(this._self, this._then);
+
+  final _LoadChatHistory _self;
+  final $Res Function(_LoadChatHistory) _then;
+
+/// Create a copy of ChatEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? sessionId = null,}) {
+  return _then(_LoadChatHistory(
+null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -364,5 +432,109 @@ as String,
 
 
 }
+
+/// @nodoc
+
+
+class _ChatHistoryLoaded implements ChatState {
+  const _ChatHistoryLoaded(final  List<ChatMessage> messages): _messages = messages;
+  
+
+ final  List<ChatMessage> _messages;
+ List<ChatMessage> get messages {
+  if (_messages is EqualUnmodifiableListView) return _messages;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_messages);
+}
+
+
+/// Create a copy of ChatState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ChatHistoryLoadedCopyWith<_ChatHistoryLoaded> get copyWith => __$ChatHistoryLoadedCopyWithImpl<_ChatHistoryLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatHistoryLoaded&&const DeepCollectionEquality().equals(other._messages, _messages));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages));
+
+@override
+String toString() {
+  return 'ChatState.chatHistoryLoaded(messages: $messages)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ChatHistoryLoadedCopyWith<$Res> implements $ChatStateCopyWith<$Res> {
+  factory _$ChatHistoryLoadedCopyWith(_ChatHistoryLoaded value, $Res Function(_ChatHistoryLoaded) _then) = __$ChatHistoryLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<ChatMessage> messages
+});
+
+
+
+
+}
+/// @nodoc
+class __$ChatHistoryLoadedCopyWithImpl<$Res>
+    implements _$ChatHistoryLoadedCopyWith<$Res> {
+  __$ChatHistoryLoadedCopyWithImpl(this._self, this._then);
+
+  final _ChatHistoryLoaded _self;
+  final $Res Function(_ChatHistoryLoaded) _then;
+
+/// Create a copy of ChatState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? messages = null,}) {
+  return _then(_ChatHistoryLoaded(
+null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
+as List<ChatMessage>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ChatHistoryLoading implements ChatState {
+  const _ChatHistoryLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatHistoryLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ChatState.chatHistoryLoading()';
+}
+
+
+}
+
+
+
 
 // dart format on

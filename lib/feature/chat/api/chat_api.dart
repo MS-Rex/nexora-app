@@ -16,7 +16,7 @@ abstract class ChatApi {
   Future<ChatResponse> sendMessage(@Body() ChatRequest request);
 
   @GET("api/mobile-api/chat/history")
-  Future<ChatHistoryResponse> getChatHistory();
+  Future<List<ChatHistory>> getChatHistory();
 
   @GET("api/mobile-api/chat/history/get/{session_id}")
   Future<List<ChatMessage>> getChatBySessionId(
@@ -28,18 +28,42 @@ class ChatMessage {
   final String text;
   final bool isUser;
   final String? timestamp;
+  final String? id;
+  final String? agentName;
+  final String? agentUsed;
+  final String? intent;
 
-  ChatMessage({required this.text, required this.isUser, this.timestamp});
+  ChatMessage({
+    required this.text,
+    required this.isUser,
+    this.timestamp,
+    this.id,
+    this.agentName,
+    this.agentUsed,
+    this.intent,
+  });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      text: json['text'] ?? '',
-      isUser: json['isUser'] ?? false,
-      timestamp: json['timestamp'],
+      text: json['content'] ?? '',
+      isUser: json['role'] == 'user',
+      timestamp: json['created_at'],
+      id: json['id'],
+      agentName: json['agent_name'],
+      agentUsed: json['agent_used'],
+      intent: json['intent'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'text': text, 'isUser': isUser, 'timestamp': timestamp};
+    return {
+      'content': text,
+      'role': isUser ? 'user' : 'assistant',
+      'created_at': timestamp,
+      'id': id,
+      'agent_name': agentName,
+      'agent_used': agentUsed,
+      'intent': intent,
+    };
   }
 }

@@ -12,6 +12,9 @@ dependencies:
   auto_route: ^10.0.1
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
   flutter_bloc: ^8.0.1
   google_fonts: ^6.1.0
@@ -30,6 +33,9 @@ dependencies:
   record: ^5.1.2
   audioplayers: ^6.1.0
   flutter_secure_storage: ^8.1.0
+  flutter_markdown: ^0.7.4+1
+  url_launcher: ^6.3.0
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   sentry_dart_plugin: ^2.4.1
