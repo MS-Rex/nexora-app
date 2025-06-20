@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import '../../../core/common/storage/token_service.dart';
+import '../../../core/common/logger/app_logger.dart';
 import '../api/auth_api.dart';
 import '../api/models/login_request.dart';
 import '../api/models/otp_verify_request.dart';
@@ -63,7 +64,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _authApi.logout();
     } catch (e) {
       // If API call fails, still proceed with token deletion
-      print('Logout API error: $e');
+      logger.e('Logout API error: $e', e);
     } finally {
       // Always delete the token locally
       await _tokenService.deleteToken();

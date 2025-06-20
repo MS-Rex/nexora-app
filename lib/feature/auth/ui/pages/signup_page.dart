@@ -5,6 +5,7 @@ import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/gradient_background.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/localization/app_localization_extension.dart';
+import '../../../../core/common/logger/app_logger.dart';
 
 @RoutePage()
 class SignUpPage extends StatelessWidget {
@@ -60,7 +61,7 @@ class SignUpPage extends StatelessWidget {
                 label: context.l10n.signUp,
                 onPressed: () {
                   // Handle sign-up logic here
-                  print(
+                  logger.i(
                     'Sign Up: ${nameController.text}, ${emailController.text}, ${passwordController.text}',
                   );
                   // Navigate to the chat page after successful sign-up

@@ -12,6 +12,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/localization/app_localization_extension.dart';
+import '../../../../core/common/logger/app_logger.dart';
 
 @RoutePage()
 class VoiceChatScreen extends StatefulWidget {
@@ -94,9 +95,9 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       String wsUrl = '$baseUrl/$_clientId';
       // '$wsScheme://${baseUri.host}:$wsPort/voice-chat/$_clientId';
 
-      print("Base URL: $baseUrl"); // Debug log
-      print("Constructed WebSocket URL: $wsUrl"); // Debug log
-      print("Client ID: $_clientId"); // Debug log
+      logger.d("Base URL: $baseUrl");
+      logger.d("Constructed WebSocket URL: $wsUrl");
+      logger.d("Client ID: $_clientId");
 
       if (mounted) {
         setState(() {
@@ -148,7 +149,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         }
       }
     } catch (e) {
-      print("WebSocket connection error: $e"); // Debug log
+      logger.e("WebSocket connection error: $e", e);
       if (mounted) {
         setState(() {
           _isConnected = false;
@@ -176,7 +177,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   void _handleWebSocketMessage(dynamic data) {
     try {
       final message = jsonDecode(data);
-      print("Received message: $message"); // Debug log
+      logger.d("Received message: $message");
 
       switch (message['type']) {
         case 'transcription':
@@ -202,7 +203,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           }
           break;
         case 'pong':
-          print("🏓 Pong received from server");
+          logger.d("🏓 Pong received from server");
           if (mounted) {
             setState(() {
               _statusText = "Connection verified ✓ - Ready to talk";
@@ -226,16 +227,16 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           }
           break;
         default:
-          print("Unknown message type: ${message['type']}");
+          logger.w("Unknown message type: ${message['type']}");
       }
     } catch (e) {
-      print("Error parsing WebSocket message: $e");
+      logger.e("Error parsing WebSocket message: $e", e);
     }
   }
 
   /// Handle WebSocket errors
   void _handleWebSocketError(error) {
-    print("WebSocket error: $error");
+    logger.e("WebSocket error: $error", error);
     if (mounted) {
       setState(() {
         _isConnected = false;
@@ -285,7 +286,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         });
       }
     } catch (e) {
-      print("Error playing audio: $e");
+      logger.e("Error playing audio: $e", e);
       if (mounted) {
         setState(() {
           _isAISpeaking = false;
@@ -355,41 +356,35 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   }
 
   Future<void> _startRecording() async {
+    if (_isListening || !_hasMicPermission || !_isConnected) return;
+
     try {
-      // Check if microphone permission is granted
-      if (await _audioRecorder.hasPermission()) {
-        final tempDir = Directory.systemTemp;
-        _currentRecordingPath =
-            '${tempDir.path}/recording_${DateTime.now().millisecondsSinceEpoch}.wav';
+      logger.d("🔍 Starting recording to: $_currentRecordingPath");
 
-        print("🔍 Starting recording to: $_currentRecordingPath");
+      // Create a unique file path
+      final directory = Directory.systemTemp;
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      _currentRecordingPath = '${directory.path}/audio_record_$timestamp.wav';
 
-        await _audioRecorder.start(
-          const RecordConfig(
-            encoder: AudioEncoder.wav,
-            sampleRate: 16000, // Match web app sample rate
-            numChannels: 1,
-          ),
-          path: _currentRecordingPath!,
-        );
+      await _audioRecorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.wav,
+          sampleRate: 16000,
+          bitRate: 256000,
+        ),
+        path: _currentRecordingPath!,
+      );
 
-        print("🔍 Recording started successfully");
+      logger.d("🔍 Recording started successfully");
 
-        if (mounted) {
-          setState(() {
-            _isListening = true;
-            _isAISpeaking = false;
-            _statusText = "Recording... Tap again to stop";
-            _pulseController.repeat(reverse: true);
-            _waveController.stop();
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _statusText = "Microphone permission not granted";
-          });
-        }
+      if (mounted) {
+        setState(() {
+          _isListening = true;
+          _isAISpeaking = false;
+          _statusText = "Recording... Tap again to stop";
+          _pulseController.repeat(reverse: true);
+          _waveController.stop();
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -401,118 +396,108 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   }
 
   Future<void> _stopRecording() async {
+    if (!_isListening) return;
+
     try {
-      print("🔍 Stopping recording...");
-      await _audioRecorder.stop();
-      print("🔍 Recording stopped");
+      logger.d("🔍 Stopping recording...");
+      final path = await _audioRecorder.stop();
+      logger.d("🔍 Recording stopped");
 
-      _recordingTimer?.cancel();
+      if (path != null) {
+        _currentRecordingPath = path;
+        logger.d("🔍 Waiting for file to be written...");
+        await Future.delayed(const Duration(milliseconds: 500));
 
-      // Wait a moment for the file to be fully written
-      print("🔍 Waiting for file to be written...");
-      await Future.delayed(const Duration(milliseconds: 500));
+        logger.d("🔍 About to send complete audio...");
+        await _sendCompleteAudio();
+        logger.d("🔍 _sendCompleteAudio finished");
 
-      // Send the complete audio file
-      print("🔍 About to send complete audio...");
-      await _sendCompleteAudio();
-      print("🔍 _sendCompleteAudio finished");
-
-      if (mounted) {
-        setState(() {
-          _isListening = false;
-          _pulseController.stop();
-          _pulseController.reset();
-          _statusText = "Processing your message...";
-        });
-      }
-    } catch (e) {
-      print("❌ Error stopping recording: $e");
-    }
-  }
-
-  Future<void> _sendCompleteAudio() async {
-    print("🔍 _sendCompleteAudio called");
-    print("🔍 _currentRecordingPath: $_currentRecordingPath");
-    print("🔍 _webSocketChannel: $_webSocketChannel");
-    print("🔍 _isConnected: $_isConnected");
-
-    if (_currentRecordingPath != null && _webSocketChannel != null) {
-      try {
-        final audioFile = File(_currentRecordingPath!);
-        print("🔍 Audio file path: ${audioFile.path}");
-        print("🔍 Audio file exists: ${await audioFile.exists()}");
-
-        if (await audioFile.exists()) {
-          try {
-            print("🔍 Reading audio file...");
-            final audioBytes = await audioFile.readAsBytes();
-            print("🔍 Audio file size: ${audioBytes.length} bytes");
-
-            if (audioBytes.isEmpty) {
-              print("❌ Audio file is empty");
-              if (mounted) {
-                setState(() {
-                  _statusText = "Failed to record. Try again.";
-                });
-              }
-              return;
-            }
-
-            print("🔍 Encoding to base64...");
-            final base64Audio = base64Encode(audioBytes);
-            print("🔍 Base64 audio length: ${base64Audio.length} characters");
-
-            final message = {
-              "type": "audio_chunk",
-              "data": base64Audio,
-              "format": "wav",
-              "sample_rate": 16000,
-              "channels": 1,
-            };
-
-            print("🔍 Sending message to WebSocket...");
-            _webSocketChannel?.sink.add(jsonEncode(message));
-            print("📤 Sent complete audio (${audioBytes.length} bytes)");
-
-            // Clean up the temporary file
-            print("🔍 Deleting audio file...");
-            await audioFile.delete();
-            print("🔍 Audio file deleted");
-          } catch (fileError) {
-            print("❌ Error reading audio file: $fileError");
-            if (mounted) {
-              setState(() {
-                _statusText = "Processing error. Try again.";
-              });
-            }
-          }
-        } else {
-          print("❌ Audio file does not exist at path: ${audioFile.path}");
-          if (mounted) {
-            setState(() {
-              _statusText = "Recording not found. Try again.";
-            });
-          }
-        }
-      } catch (e) {
-        print("❌ Error sending complete audio: $e");
         if (mounted) {
           setState(() {
-            _statusText = "Failed to send audio. Try again.";
+            _isListening = false;
+            _pulseController.stop();
+            _pulseController.reset();
+            _statusText = "Processing your message...";
           });
         }
       }
+    } catch (e) {
+      logger.e("❌ Error stopping recording: $e", e);
+    }
+  }
+
+  /// Send complete audio file to WebSocket
+  Future<void> _sendCompleteAudio() async {
+    logger.d("🔍 _sendCompleteAudio called");
+    logger.d("🔍 _currentRecordingPath: $_currentRecordingPath");
+    logger.d("🔍 _webSocketChannel: $_webSocketChannel");
+    logger.d("🔍 _isConnected: $_isConnected");
+
+    if (_currentRecordingPath != null &&
+        _webSocketChannel != null &&
+        _isConnected) {
+      final audioFile = File(_currentRecordingPath!);
+      logger.d("🔍 Audio file path: ${audioFile.path}");
+      logger.d("🔍 Audio file exists: ${await audioFile.exists()}");
+
+      if (await audioFile.exists()) {
+        try {
+          logger.d("🔍 Reading audio file...");
+          final audioBytes = await audioFile.readAsBytes();
+          logger.d("🔍 Audio file size: ${audioBytes.length} bytes");
+
+          if (audioBytes.isEmpty) {
+            logger.e("❌ Audio file is empty");
+            return;
+          }
+
+          // Convert to base64
+          final base64Audio = base64Encode(audioBytes);
+
+          // Instead of sending streaming chunks, send complete audio
+          final message = jsonEncode({
+            'type': 'complete_audio',
+            'audio': base64Audio,
+            'client_id': _clientId,
+          });
+
+          logger.d("🔍 Encoding to base64...");
+
+          logger.d("🔍 Base64 audio length: ${base64Audio.length} characters");
+
+          if (_webSocketChannel != null) {
+            try {
+              logger.d("🔍 Sending message to WebSocket...");
+              _webSocketChannel!.sink.add(message);
+              logger.i("📤 Sent complete audio (${audioBytes.length} bytes)");
+
+              // Clean up the audio file
+              logger.d("🔍 Deleting audio file...");
+              await audioFile.delete();
+              logger.d("🔍 Audio file deleted");
+            } on FileSystemException catch (fileError) {
+              logger.e("❌ Error reading audio file: $fileError", fileError);
+            }
+          }
+        } catch (e) {
+          if (e is FileSystemException) {
+            // Handle file errors
+            logger.e("❌ Error reading audio file: $e", e);
+          } else {
+            logger.e("❌ Audio file does not exist at path: ${audioFile.path}");
+          }
+        }
+      } else {
+        logger.e("❌ Audio file does not exist at path: ${audioFile.path}");
+      }
     } else {
-      print("❌ Missing requirements:");
-      print(
+      // Debug missing requirements
+      logger.e("❌ Missing requirements:");
+      logger.e(
         "   _currentRecordingPath is null: ${_currentRecordingPath == null}",
       );
-      print("   _webSocketChannel is null: ${_webSocketChannel == null}");
-      if (mounted) {
-        setState(() {
-          _statusText = "Connection issue. Tap to retry.";
-        });
-      }
+      logger.e("   _webSocketChannel is null: ${_webSocketChannel == null}");
+      logger.e("   _isConnected: $_isConnected");
     }
   }
 

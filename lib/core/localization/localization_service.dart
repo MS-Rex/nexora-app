@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../common/logger/app_logger.dart';
 import 'package:injectable/injectable.dart';
 import 'app_localizations.dart';
 
@@ -39,7 +39,7 @@ class LocalizationService extends ChangeNotifier {
       }
     } catch (e) {
       // If loading fails, keep default locale
-      debugPrint('Failed to load saved language: $e');
+      logger.e('Failed to load saved language: $e', e);
     }
   }
 
@@ -60,7 +60,7 @@ class LocalizationService extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_languageKey, languageCode);
     } catch (e) {
-      debugPrint('Failed to save language preference: $e');
+      logger.e('Failed to save language preference: $e', e);
     }
   }
 

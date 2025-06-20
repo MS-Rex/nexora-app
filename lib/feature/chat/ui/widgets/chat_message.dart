@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/common/logger/app_logger.dart';
 
 class ChatMessage extends StatelessWidget {
   final String text;
@@ -41,11 +42,11 @@ class ChatMessage extends StatelessWidget {
         try {
           await launchUrl(uri, mode: LaunchMode.platformDefault);
         } catch (e) {
-          debugPrint('Failed to launch URL: $e');
+          logger.e('Failed to launch URL: $e', e);
         }
       }
     } catch (e) {
-      debugPrint('Error launching URL: $e');
+      logger.e('Error launching URL: $e', e);
     }
   }
 
@@ -90,7 +91,7 @@ class ChatMessage extends StatelessWidget {
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
+                maxWidth: MediaQuery.sizeOf(context).width * 0.75,
               ),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -101,7 +102,7 @@ class ChatMessage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 3,
                     offset: const Offset(0, 1),
                   ),

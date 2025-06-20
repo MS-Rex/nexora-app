@@ -12,6 +12,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uuid/uuid.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../core/common/logger/app_logger.dart';
+
 class VoiceChatServiceState {
   final bool isListening;
   final bool isAISpeaking;
@@ -99,9 +101,9 @@ class VoiceChatService {
       String wsUrl = '$baseUrl/$_clientId';
       // '$wsScheme://${baseUri.host}:$wsPort/voice-chat/$_clientId';
 
-      print('Base URL: $baseUrl');
-      print('Constructed WebSocket URL: $wsUrl');
-      print('Client ID: $_clientId');
+      logger.d('Base URL: $baseUrl');
+      logger.d('Constructed WebSocket URL: $wsUrl');
+      logger.d('Client ID: $_clientId');
 
       _updateState(_state.copyWith(statusText: "Connecting..."));
 
@@ -217,10 +219,10 @@ class VoiceChatService {
 
   /// Handle WebSocket errors
   void _handleWebSocketError(error) {
-    print('❌ WebSocket Error Details:');
-    print('   Error type: ${error.runtimeType}');
-    print('   Error message: $error');
-    print('   Client ID: $_clientId');
+    logger.e('❌ WebSocket Error Details:');
+    logger.e('   Error type: ${error.runtimeType}');
+    logger.e('   Error message: $error');
+    logger.e('   Client ID: $_clientId');
 
     _updateState(
       _state.copyWith(
@@ -291,7 +293,7 @@ class VoiceChatService {
         ),
       );
     } catch (e) {
-      debugPrint("Error stopping recording: $e");
+      logger.e("Error stopping recording: $e", e);
     }
   }
 
@@ -363,7 +365,7 @@ class VoiceChatService {
         ),
       );
     } catch (e) {
-      debugPrint("Error playing audio: $e");
+      logger.e("Error playing audio: $e", e);
       _updateState(
         _state.copyWith(
           isAISpeaking: false,
