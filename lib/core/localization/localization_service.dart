@@ -8,7 +8,7 @@ import 'app_localizations.dart';
 class LocalizationService extends ChangeNotifier {
   static const String _languageKey = 'selected_language';
 
-  Locale _currentLocale = const Locale('si', '');
+  Locale _currentLocale = const Locale('en', '');
   bool _isInitialized = false;
 
   Locale get currentLocale => _currentLocale;

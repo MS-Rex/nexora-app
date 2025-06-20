@@ -10,7 +10,7 @@ abstract class DioProvider {
       BaseOptions(
         baseUrl: 'https://nexora.msanjana.com/',
         connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 200),
         contentType: 'application/json',
         headers: {
           'Content-Type': 'application/json',

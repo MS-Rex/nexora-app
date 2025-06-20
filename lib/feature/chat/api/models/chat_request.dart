@@ -7,7 +7,7 @@ part 'chat_request.g.dart';
 abstract class ChatRequest with _$ChatRequest {
   const factory ChatRequest({
     required String message,
-    @JsonKey(name: 'session_id') String? sessionId,
+    @JsonKey(name: 'sessionId') String? sessionId,
   }) = _ChatRequest;
 
   factory ChatRequest.fromJson(Map<String, dynamic> json) =>

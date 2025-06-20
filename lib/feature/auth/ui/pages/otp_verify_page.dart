@@ -8,6 +8,7 @@ import 'package:pinput/pinput.dart';
 import '../../../../core/config/routes/app_routes.dart';
 import '../../../../core/widgets/gradient_background.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 @RoutePage()
 class OtpVerifyPage extends StatefulWidget {
@@ -44,14 +45,14 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       } catch (e) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Invalid OTP format')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.invalidOtpFormat)));
         setState(() {
           _isLoading = false;
         });
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid 6-digit OTP')),
+        SnackBar(content: Text(context.l10n.enterValidSixDigitOtp)),
       );
     }
   }
@@ -103,8 +104,8 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                   width: 150,
                   color: Colors.black,
                 ),
-                const Text(
-                  "Enter OTP",
+                Text(
+                  context.l10n.enterOtp,
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -112,8 +113,8 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Check your email inbox for a 6-digit code.',
+                Text(
+                  context.l10n.checkEmailInbox,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -125,7 +126,8 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
 
                 const SizedBox(height: 30),
                 PrimaryButton(
-                  label: _isLoading ? 'Verifying...' : 'Next',
+                  label:
+                      _isLoading ? context.l10n.verifying : context.l10n.next,
                   onPressed: _isLoading ? () {} : _verifyOtp,
                 ),
               ],

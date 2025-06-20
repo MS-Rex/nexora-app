@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/gradient_background.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 @RoutePage()
 class SignUpPage extends StatelessWidget {
@@ -32,8 +33,8 @@ class SignUpPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-              const Text(
-                'Sign Up for Nexora',
+              Text(
+                context.l10n.signUpForNexora,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -41,16 +42,22 @@ class SignUpPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              CustomTextField(label: 'Name', controller: nameController),
-              CustomTextField(label: 'Email', controller: emailController),
               CustomTextField(
-                label: 'Password',
+                label: context.l10n.name,
+                controller: nameController,
+              ),
+              CustomTextField(
+                label: context.l10n.email,
+                controller: emailController,
+              ),
+              CustomTextField(
+                label: context.l10n.password,
                 controller: passwordController,
                 obscureText: true,
               ),
               const SizedBox(height: 30),
               PrimaryButton(
-                label: 'Sign Up',
+                label: context.l10n.signUp,
                 onPressed: () {
                   // Handle sign-up logic here
                   print(

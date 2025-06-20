@@ -46,6 +46,16 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _localizationService = getIt<LocalizationService>();
+
+    // Initialize connectivity service after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      print('🚀 Initializing connectivity service');
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

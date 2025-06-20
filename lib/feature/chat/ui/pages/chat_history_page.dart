@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/routes/app_routes.dart';
 import '../../bloc/chat_history_bloc.dart';
 import '../../../../injector.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 @RoutePage()
 class ChatHistoryPage extends StatefulWidget {
@@ -33,7 +34,7 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat History'),
+        title: Text(context.l10n.chatHistory),
         automaticallyImplyLeading: true,
       ),
       body: BlocBuilder<ChatHistoryBloc, ChatHistoryState>(

@@ -8,11 +8,11 @@ part of 'chat_request.dart';
 
 _ChatRequest _$ChatRequestFromJson(Map<String, dynamic> json) => _ChatRequest(
   message: json['message'] as String,
-  sessionId: json['session_id'] as String?,
+  sessionId: json['sessionId'] as String?,
 );
 
 Map<String, dynamic> _$ChatRequestToJson(_ChatRequest instance) =>
     <String, dynamic>{
       'message': instance.message,
-      'session_id': instance.sessionId,
+      'sessionId': instance.sessionId,
     };

@@ -24,7 +24,7 @@ class ChatResponse {
   @JsonKey(defaultValue: '')
   final String timestamp;
 
-  @JsonKey(name: 'session_id', defaultValue: '')
+  @JsonKey(name: 'sessionId', defaultValue: '')
   final String sessionId;
 
   ChatResponse({

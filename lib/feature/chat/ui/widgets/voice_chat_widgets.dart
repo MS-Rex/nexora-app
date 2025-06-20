@@ -34,8 +34,8 @@ class AnimatedVoiceCircle extends StatelessWidget {
                     colors: [
                       const Color(
                         0xFF7C3AED,
-                      ).withOpacity(0.1 + (waveAnimation.value * 0.2)),
-                      const Color(0xFF7C3AED).withOpacity(0.05),
+                      ).withValues(alpha: 0.1 + (waveAnimation.value * 0.2)),
+                      const Color(0xFF7C3AED).withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -57,8 +57,8 @@ class AnimatedVoiceCircle extends StatelessWidget {
                     colors: [
                       const Color(
                         0xFF8B5CF6,
-                      ).withOpacity(0.2 + (waveAnimation.value * 0.3)),
-                      const Color(0xFF8B5CF6).withOpacity(0.1),
+                      ).withValues(alpha: 0.2 + (waveAnimation.value * 0.3)),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -80,8 +80,8 @@ class AnimatedVoiceCircle extends StatelessWidget {
                     colors: [
                       const Color(
                         0xFFA855F7,
-                      ).withOpacity(0.3 + (waveAnimation.value * 0.4)),
-                      const Color(0xFFA855F7).withOpacity(0.15),
+                      ).withValues(alpha: 0.3 + (waveAnimation.value * 0.4)),
+                      const Color(0xFFA855F7).withValues(alpha: 0.15),
                     ],
                   ),
                 ),
@@ -101,8 +101,8 @@ class AnimatedVoiceCircle extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF7C3AED).withOpacity(0.15),
-                      const Color(0xFF7C3AED).withOpacity(0.05),
+                      const Color(0xFF7C3AED).withValues(alpha: 0.15),
+                      const Color(0xFF7C3AED).withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -121,8 +121,8 @@ class AnimatedVoiceCircle extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF8B5CF6).withOpacity(0.25),
-                      const Color(0xFF8B5CF6).withOpacity(0.1),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.25),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -142,8 +142,8 @@ class AnimatedVoiceCircle extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFEF4444).withOpacity(0.3),
-                      const Color(0xFFEF4444).withOpacity(0.1),
+                      const Color(0xFFEF4444).withValues(alpha: 0.3),
+                      const Color(0xFFEF4444).withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -172,7 +172,7 @@ class AnimatedVoiceCircle extends StatelessWidget {
                 color: (isListening
                         ? const Color(0xFFEF4444)
                         : const Color(0xFF7C3AED))
-                    .withOpacity(0.4),
+                    .withValues(alpha: 0.4),
                 blurRadius: 20,
                 spreadRadius: 0,
                 offset: const Offset(0, 8),
@@ -213,14 +213,14 @@ class StatusIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color:
             isActive
-                ? const Color(0xFF10B981).withOpacity(0.1)
-                : Colors.red.withOpacity(0.1),
+                ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                : Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color:
               isActive
-                  ? const Color(0xFF10B981).withOpacity(0.3)
-                  : Colors.red.withOpacity(0.3),
+                  ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                  : Colors.red.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -262,7 +262,7 @@ class StatusMessageBubble extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -321,7 +321,7 @@ class MicrophoneButton extends StatelessWidget {
                     color: (isListening
                             ? const Color(0xFFEF4444)
                             : const Color(0xFF7C3AED))
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 0,
                     offset: const Offset(0, 10),

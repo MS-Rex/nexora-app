@@ -151,5 +151,118 @@ class LocalizationStrings {
       si: 'හායි, විශ්වවිද්‍යාල ආශ්‍රිත ඕනෑම දෙයක් මගෙන් අහන්න',
       ta: 'வணக்கம், பல்கலைக்கழகம் தொடர்பான எதையும் என்னிடம் கேளுங்கள்',
     ),
+    // Login screen specific strings
+    LocalizedString(
+      key: 'welcome_exclamation',
+      en: 'Welcome !',
+      si: 'සාදරයෙන් පිළිගන්නවා !',
+      ta: 'வரவேற்கிறோம் !',
+    ),
+    LocalizedString(
+      key: 'login_to_nexora',
+      en: 'Login to Nexora',
+      si: 'නෙක්සෝරා වෙත ප්‍රවේශ වන්න',
+      ta: 'நெக்சோராவில் உள்நுழையவும்',
+    ),
+    LocalizedString(
+      key: 'processing',
+      en: 'Processing...',
+      si: 'සකසමින්...',
+      ta: 'செயல்படுத்துகிறது...',
+    ),
+    LocalizedString(
+      key: 'email_required',
+      en: 'Email is required',
+      si: 'ඊමේල් අවශ්‍ය වේ',
+      ta: 'மின்னஞ்சல் தேவை',
+    ),
+    LocalizedString(
+      key: 'enter_valid_email',
+      en: 'Please enter a valid email',
+      si: 'කරුණාකර වලංගු ඊමේල් ලිපිනයක් ඇතුළත් කරන්න',
+      ta: 'தயவுசெய்து சரியான மின்னஞ்சலை உள்ளிடவும்',
+    ),
+    // Signup screen strings
+    LocalizedString(
+      key: 'sign_up_for_nexora',
+      en: 'Sign Up for Nexora',
+      si: 'නෙක්සෝරා සඳහා ලියාපදිංචි වන්න',
+      ta: 'நெக்சோராவில் பதிவு செய்யவும்',
+    ),
+    LocalizedString(key: 'name', en: 'Name', si: 'නම', ta: 'பெயர்'),
+    LocalizedString(
+      key: 'sign_up',
+      en: 'Sign Up',
+      si: 'ලියාපදිංචි වන්න',
+      ta: 'பதிவு செய்யவும்',
+    ),
+    // OTP verification strings
+    LocalizedString(
+      key: 'enter_otp',
+      en: 'Enter OTP',
+      si: 'OTP ඇතුළත් කරන්න',
+      ta: 'OTP உள்ளிடவும்',
+    ),
+    LocalizedString(
+      key: 'check_email_inbox',
+      en: 'Check your email inbox for a 6-digit code.',
+      si: 'ඉලක්කම් 6 කින් යුත් කේතයක් සඳහා ඔබේ ඊමේල් පෙට්ටිය පරීක්ෂා කරන්න.',
+      ta: '6-இலக்க குறியீட்டுக்காக உங்கள் மின்னஞ்சல் பெட்டியைச் சரிபார்க்கவும்.',
+    ),
+    LocalizedString(
+      key: 'verifying',
+      en: 'Verifying...',
+      si: 'සත්‍යාපනය කරමින්...',
+      ta: 'சரிபார்க்கிறது...',
+    ),
+    LocalizedString(
+      key: 'invalid_otp_format',
+      en: 'Invalid OTP format',
+      si: 'වලංගු නොවන OTP ආකෘතිය',
+      ta: 'தவறான OTP வடிவம்',
+    ),
+    LocalizedString(
+      key: 'enter_valid_six_digit_otp',
+      en: 'Please enter a valid 6-digit OTP',
+      si: 'කරුණාකර වලංගු ඉලක්කම් 6 කින් යුත් OTP එකක් ඇතුළත් කරන්න',
+      ta: 'தயவுசெய்து சரியான 6-இலக்க OTP ஐ உள்ளிடவும்',
+    ),
+    // Chat and voice chat strings
+    LocalizedString(
+      key: 'chat_history',
+      en: 'Chat History',
+      si: 'කතාබස් ඉතිහාසය',
+      ta: 'அரட்டை வரலாறு',
+    ),
+    LocalizedString(
+      key: 'microphone_ready',
+      en: 'Microphone Ready',
+      si: 'මයික්‍රෆෝනය සකසා ඇත',
+      ta: 'மைக்ரோஃபோன் தயார்',
+    ),
+    LocalizedString(
+      key: 'connected_ready_to_listen',
+      en: 'Connected - Ready to listen',
+      si: 'සම්බන්ධයි - ඇසීමට සකසා ඇත',
+      ta: 'இணைக்கப்பட்டது - கேட்க தயார்',
+    ),
+    LocalizedString(
+      key: 'tap_to_start_speaking',
+      en: 'Tap to start speaking',
+      si: 'කතා කිරීම ආරම්භ කිරීමට ස්පර්ශ කරන්න',
+      ta: 'பேச ஆரம்பிக்க தொடவும்',
+    ),
+    LocalizedString(
+      key: 'connected',
+      en: 'Connected',
+      si: 'සම්බන්ධයි',
+      ta: 'இணைக்கப்பட்டது',
+    ),
+    LocalizedString(
+      key: 'disconnected',
+      en: 'Disconnected',
+      si: 'විසන්ධි වී ඇත',
+      ta: 'துண்டிக்கப்பட்டது',
+    ),
   ];
 }

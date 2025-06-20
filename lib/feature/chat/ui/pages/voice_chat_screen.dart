@@ -11,6 +11,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 @RoutePage()
 class VoiceChatScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   String? _currentRecordingPath;
   bool _hasMicPermission = false;
   bool _isConnected = false;
-  String _clientId = const Uuid().v4();
+  final String _clientId = const Uuid().v4();
   Timer? _recordingTimer;
 
   @override
@@ -112,7 +113,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           if (!_isConnected && mounted) {
             setState(() {
               _isConnected = true;
-              _statusText = "Connected - Ready to listen";
+              _statusText = context.l10n.connectedReadyToListen;
             });
           }
           _handleWebSocketMessage(data);
@@ -139,7 +140,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           if (mounted) {
             setState(() {
               _isConnected = true;
-              _statusText = "Connected - Ready to listen";
+              _statusText = context.l10n.connectedReadyToListen;
             });
           }
         } catch (e) {
@@ -166,7 +167,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
     if (mounted) {
       setState(() {
         _isConnected = false;
-        _statusText = "Tap to start speaking";
+        _statusText = context.l10n.tapToStartSpeaking;
       });
     }
   }
@@ -211,7 +212,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted && !_isListening && !_isAISpeaking) {
               setState(() {
-                _statusText = "Tap to start speaking";
+                _statusText = context.l10n.tapToStartSpeaking;
               });
             }
           });
@@ -278,7 +279,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       if (mounted) {
         setState(() {
           _isAISpeaking = false;
-          _statusText = "Tap to start speaking";
+          _statusText = context.l10n.tapToStartSpeaking;
           _waveController.stop();
           _waveController.reset();
         });
@@ -288,7 +289,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       if (mounted) {
         setState(() {
           _isAISpeaking = false;
-          _statusText = "Tap to start speaking";
+          _statusText = context.l10n.tapToStartSpeaking;
           _waveController.stop();
           _waveController.reset();
         });
@@ -324,6 +325,18 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       // Just stop recording, keep WebSocket connected for response
       await _stopRecording();
     } else {
+      // If AI is currently speaking, stop the audio first
+      if (_isAISpeaking) {
+        await _audioPlayer.stop();
+        if (mounted) {
+          setState(() {
+            _isAISpeaking = false;
+            _waveController.stop();
+            _waveController.reset();
+          });
+        }
+      }
+
       // Connect to WebSocket if not already connected, then start recording
       if (!_isConnected) {
         await _connectWebSocket();
@@ -565,36 +578,12 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       if (mounted) {
         setState(() {
           _isAISpeaking = false;
-          _statusText = "Tap to start speaking";
+          _statusText = context.l10n.tapToStartSpeaking;
           _waveController.stop();
           _waveController.reset();
         });
       }
     });
-  }
-
-  /// Send a test message to verify WebSocket connection
-  void _sendTestMessage() {
-    if (_webSocketChannel != null && _isConnected) {
-      try {
-        final testMessage = {"type": "ping", "message": "test_connection"};
-
-        _webSocketChannel?.sink.add(jsonEncode(testMessage));
-
-        if (mounted) {
-          setState(() {
-            _statusText = "Test message sent...";
-          });
-        }
-
-        print("Test message sent: ${jsonEncode(testMessage)}");
-      } catch (e) {
-        print("Error sending test message: $e");
-        // _showErrorDialog("Failed to send test message: $e");
-      }
-    } else {
-      _showErrorDialog("Not connected to server. Please connect first.");
-    }
   }
 
   @override
@@ -611,7 +600,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -624,7 +613,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         ),
         centerTitle: true,
         title: const Text(
-          "NEXORA",
+          "NEXORA VOICE CHAT",
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
@@ -662,7 +651,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -693,7 +682,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                                   : Iconsax.microphone_slash,
                           label:
                               _hasMicPermission
-                                  ? "Microphone Ready"
+                                  ? context.l10n.microphoneReady
                                   : "Microphone Access Needed",
                           isActive: _hasMicPermission,
                         ),
@@ -701,7 +690,10 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                         _buildStatusIndicator(
                           icon:
                               _isConnected ? Iconsax.wifi : Iconsax.cloud_cross,
-                          label: _isConnected ? "Connected" : "Disconnected",
+                          label:
+                              _isConnected
+                                  ? context.l10n.connected
+                                  : context.l10n.disconnected,
                           isActive: _isConnected,
                         ),
                       ],
@@ -745,7 +737,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                                   color: (_isListening
                                           ? const Color(0xFFEF4444)
                                           : const Color(0xFF7C3AED))
-                                      .withOpacity(0.3),
+                                      .withValues(alpha: 0.3),
                                   blurRadius: 20,
                                   spreadRadius: 0,
                                   offset: const Offset(0, 10),
@@ -769,7 +761,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                   Text(
                     _isListening
                         ? "Listening... Tap to stop"
-                        : "Tap to start speaking",
+                        : context.l10n.tapToStartSpeaking,
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 16,
@@ -803,8 +795,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                     colors: [
                       const Color(
                         0xFF7C3AED,
-                      ).withOpacity(0.1 + (_waveAnimation.value * 0.2)),
-                      const Color(0xFF7C3AED).withOpacity(0.05),
+                      ).withValues(alpha: 0.1 + (_waveAnimation.value * 0.2)),
+                      const Color(0xFF7C3AED).withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -826,8 +818,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                     colors: [
                       const Color(
                         0xFF8B5CF6,
-                      ).withOpacity(0.2 + (_waveAnimation.value * 0.3)),
-                      const Color(0xFF8B5CF6).withOpacity(0.1),
+                      ).withValues(alpha: 0.2 + (_waveAnimation.value * 0.3)),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -849,8 +841,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                     colors: [
                       const Color(
                         0xFFA855F7,
-                      ).withOpacity(0.3 + (_waveAnimation.value * 0.4)),
-                      const Color(0xFFA855F7).withOpacity(0.15),
+                      ).withValues(alpha: 0.3 + (_waveAnimation.value * 0.4)),
+                      const Color(0xFFA855F7).withValues(alpha: 0.15),
                     ],
                   ),
                 ),
@@ -870,8 +862,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF7C3AED).withOpacity(0.15),
-                      const Color(0xFF7C3AED).withOpacity(0.05),
+                      const Color(0xFF7C3AED).withValues(alpha: 0.15),
+                      const Color(0xFF7C3AED).withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -890,8 +882,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF8B5CF6).withOpacity(0.25),
-                      const Color(0xFF8B5CF6).withOpacity(0.1),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.25),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -911,8 +903,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFEF4444).withOpacity(0.3),
-                      const Color(0xFFEF4444).withOpacity(0.1),
+                      const Color(0xFFEF4444).withValues(alpha: 0.3),
+                      const Color(0xFFEF4444).withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -941,7 +933,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                 color: (_isListening
                         ? const Color(0xFFEF4444)
                         : const Color(0xFF7C3AED))
-                    .withOpacity(0.4),
+                    .withValues(alpha: 0.4),
                 blurRadius: 20,
                 spreadRadius: 0,
                 offset: const Offset(0, 8),
@@ -972,14 +964,14 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       decoration: BoxDecoration(
         color:
             isActive
-                ? const Color(0xFF10B981).withOpacity(0.1)
-                : Colors.red.withOpacity(0.1),
+                ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                : Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color:
               isActive
-                  ? const Color(0xFF10B981).withOpacity(0.3)
-                  : Colors.red.withOpacity(0.3),
+                  ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                  : Colors.red.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

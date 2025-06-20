@@ -20,6 +20,11 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     _checkAuthAndNavigate();
+
+    // Initialize connectivity service for testing
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      print('🚀 [SPLASH] Initializing connectivity service for testing');
+    });
   }
 
   Future<void> _checkAuthAndNavigate() async {

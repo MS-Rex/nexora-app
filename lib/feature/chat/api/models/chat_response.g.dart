@@ -14,7 +14,7 @@ ChatResponse _$ChatResponseFromJson(Map<String, dynamic> json) => ChatResponse(
   success: json['success'] as bool? ?? true,
   error: json['error'] as String?,
   timestamp: json['timestamp'] as String? ?? '',
-  sessionId: json['session_id'] as String? ?? '',
+  sessionId: json['sessionId'] as String? ?? '',
 );
 
 Map<String, dynamic> _$ChatResponseToJson(ChatResponse instance) =>
@@ -26,5 +26,5 @@ Map<String, dynamic> _$ChatResponseToJson(ChatResponse instance) =>
       'success': instance.success,
       'error': instance.error,
       'timestamp': instance.timestamp,
-      'session_id': instance.sessionId,
+      'sessionId': instance.sessionId,
     };

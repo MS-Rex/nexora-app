@@ -212,19 +212,3 @@ class VoiceChatRoute extends PageRouteInfo<void> {
     },
   );
 }
-
-/// generated route for
-/// [VoiceChatScreenRefactored]
-class VoiceChatRouteRefactored extends PageRouteInfo<void> {
-  const VoiceChatRouteRefactored({List<PageRouteInfo>? children})
-    : super(VoiceChatRouteRefactored.name, initialChildren: children);
-
-  static const String name = 'VoiceChatRouteRefactored';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const VoiceChatScreenRefactored();
-    },
-  );
-}

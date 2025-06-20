@@ -94,6 +94,33 @@ class AppLocalizations {
   String get done => translate('done');
   String get close => translate('close');
   String get askMeAnything => translate('ask_me_anything');
+
+  // Login screen specific getters
+  String get welcomeExclamation => translate('welcome_exclamation');
+  String get loginToNexora => translate('login_to_nexora');
+  String get processing => translate('processing');
+  String get emailRequired => translate('email_required');
+  String get enterValidEmail => translate('enter_valid_email');
+
+  // Signup screen getters
+  String get signUpForNexora => translate('sign_up_for_nexora');
+  String get name => translate('name');
+  String get signUp => translate('sign_up');
+
+  // OTP verification getters
+  String get enterOtp => translate('enter_otp');
+  String get checkEmailInbox => translate('check_email_inbox');
+  String get verifying => translate('verifying');
+  String get invalidOtpFormat => translate('invalid_otp_format');
+  String get enterValidSixDigitOtp => translate('enter_valid_six_digit_otp');
+
+  // Chat and voice chat getters
+  String get chatHistory => translate('chat_history');
+  String get microphoneReady => translate('microphone_ready');
+  String get connectedReadyToListen => translate('connected_ready_to_listen');
+  String get tapToStartSpeaking => translate('tap_to_start_speaking');
+  String get connected => translate('connected');
+  String get disconnected => translate('disconnected');
 }
 
 class _AppLocalizationsDelegate

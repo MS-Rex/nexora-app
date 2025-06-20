@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatRequest {
 
- String get message;@JsonKey(name: 'session_id') String? get sessionId;
+ String get message;@JsonKey(name: 'sessionId') String? get sessionId;
 /// Create a copy of ChatRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $ChatRequestCopyWith<$Res>  {
   factory $ChatRequestCopyWith(ChatRequest value, $Res Function(ChatRequest) _then) = _$ChatRequestCopyWithImpl;
 @useResult
 $Res call({
- String message,@JsonKey(name: 'session_id') String? sessionId
+ String message,@JsonKey(name: 'sessionId') String? sessionId
 });
 
 
@@ -81,11 +81,11 @@ as String?,
 @JsonSerializable()
 
 class _ChatRequest implements ChatRequest {
-  const _ChatRequest({required this.message, @JsonKey(name: 'session_id') this.sessionId});
+  const _ChatRequest({required this.message, @JsonKey(name: 'sessionId') this.sessionId});
   factory _ChatRequest.fromJson(Map<String, dynamic> json) => _$ChatRequestFromJson(json);
 
 @override final  String message;
-@override@JsonKey(name: 'session_id') final  String? sessionId;
+@override@JsonKey(name: 'sessionId') final  String? sessionId;
 
 /// Create a copy of ChatRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -120,7 +120,7 @@ abstract mixin class _$ChatRequestCopyWith<$Res> implements $ChatRequestCopyWith
   factory _$ChatRequestCopyWith(_ChatRequest value, $Res Function(_ChatRequest) _then) = __$ChatRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String message,@JsonKey(name: 'session_id') String? sessionId
+ String message,@JsonKey(name: 'sessionId') String? sessionId
 });
 
 
