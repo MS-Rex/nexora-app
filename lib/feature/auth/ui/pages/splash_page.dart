@@ -4,6 +4,7 @@ import 'package:nexora/feature/auth/repository/auth_repository.dart';
 import 'package:nexora/injector.dart';
 
 import '../../../../core/config/routes/app_routes.dart';
+import '../../../../core/common/logger/app_logger.dart';
 
 @RoutePage()
 class SplashPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
 
     // Initialize connectivity service for testing
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      print('🚀 [SPLASH] Initializing connectivity service for testing');
+      logger.i('🚀 [SPLASH] Initializing connectivity service for testing');
     });
   }
 

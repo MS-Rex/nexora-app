@@ -5,6 +5,7 @@ import 'package:nexora/injector.dart';
 import 'core/config/routes/app_routes.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/localization_service.dart';
+import 'core/common/logger/app_logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -23,7 +24,7 @@ void main() async {
   final localizationService = getIt<LocalizationService>();
   await localizationService.init();
 
-  debugProfileBuildsEnabled = true;
+  // debugProfileBuildsEnabled = true; // Deprecated - use DevTools instead
   await SentryFlutter.init((options) {
     options.dsn = dotenv.env['SENTRY_DSN'] ?? '';
     options.tracesSampleRate = 1.0;
@@ -49,7 +50,7 @@ class _MyAppState extends State<MyApp> {
 
     // Initialize connectivity service after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      print('🚀 Initializing connectivity service');
+      logger.i('🚀 Initializing connectivity service');
     });
   }
 
@@ -62,7 +63,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (!_localizationService.isInitialized) {
       return MaterialApp(
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+        home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       );
     }
 
