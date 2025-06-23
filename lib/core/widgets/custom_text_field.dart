@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String label;
+  final String hintText;
   final TextEditingController controller;
   final bool obscureText;
   final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
-    required this.label,
+    required this.hintText,
     required this.controller,
     this.obscureText = false,
     this.validator,
@@ -21,15 +21,23 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       decoration: InputDecoration(
-        labelText: label,
+        filled: true,
+        fillColor: Colors.grey.shade300,
+        hintText: hintText,
+        // labelText: label,
+        hintStyle: const TextStyle(color: Colors.grey),
         labelStyle: const TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.grey),
+          borderSide: const BorderSide(),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF6A5ACD)),
+          borderSide: const BorderSide(color: Color(0xFF7F22FE)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.grey.shade400),
         ),
       ),
     );
