@@ -47,6 +47,17 @@ class AuthRepositoryImpl implements AuthRepository {
     // Save the token if available in the response
     if (response is Map<String, dynamic> && response.containsKey('token')) {
       await _tokenService.saveToken(response['token']);
+      // Also save the user email for avatar generation
+      await _tokenService.saveUserEmail(email);
+
+      // Save the user's full name if available in the response
+      if (response.containsKey('user') &&
+          response['user'] is Map<String, dynamic>) {
+        final user = response['user'] as Map<String, dynamic>;
+        if (user.containsKey('full_name') && user['full_name'] is String) {
+          await _tokenService.saveUserFullName(user['full_name']);
+        }
+      }
     }
 
     return response;
@@ -66,8 +77,10 @@ class AuthRepositoryImpl implements AuthRepository {
       // If API call fails, still proceed with token deletion
       logger.e('Logout API error: $e', e);
     } finally {
-      // Always delete the token locally
+      // Always delete the token and user data locally
       await _tokenService.deleteToken();
+      await _tokenService.deleteUserEmail();
+      await _tokenService.deleteUserFullName();
     }
   }
 }

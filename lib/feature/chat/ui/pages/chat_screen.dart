@@ -1,9 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/config/routes/app_routes.dart';
 import '../../../../feature/auth/bloc/auth_bloc.dart';
 import '../../../../feature/chat/ui/bloc/chat_bloc.dart';
+import '../../../../core/common/storage/token_service.dart';
 import '../../../../injector.dart';
 import '../widgets/widgets.dart';
 import '../mixins/chat_event_handler_mixin.dart';
@@ -24,7 +26,10 @@ class _ChatViewPageState extends State<ChatViewPage>
   final List<ChatMessage> _messages = [];
   final AuthBloc _authBloc = getIt<AuthBloc>();
   final ChatBloc _chatBloc = getIt<ChatBloc>();
+  final TokenService _tokenService = getIt<TokenService>();
   bool _isLoading = false;
+  String? _userEmail;
+  String? _userFirstName;
 
   @override
   void initState() {
@@ -33,6 +38,26 @@ class _ChatViewPageState extends State<ChatViewPage>
     if (widget.sessionId != null && widget.sessionId!.isNotEmpty) {
       _chatBloc.add(ChatEvent.loadChatHistory(widget.sessionId!));
     }
+    // Load user email and first name for avatar and welcome message
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final email = await _tokenService.getUserEmail();
+    final firstName = await _tokenService.getUserFirstName();
+    if (mounted) {
+      setState(() {
+        _userEmail = email;
+        _userFirstName = firstName;
+      });
+    }
+  }
+
+  String _getAvatarUrl() {
+    if (_userEmail == null) return '';
+    // URL encode the email for the Vercel avatar API
+    final encodedEmail = Uri.encodeComponent(_userEmail!);
+    return 'https://avatar.vercel.sh/$encodedEmail.svg';
   }
 
   @override
@@ -43,6 +68,9 @@ class _ChatViewPageState extends State<ChatViewPage>
   }
 
   void _handleSubmitted(String text) {
+    // Dismiss keyboard when message is sent
+    FocusScope.of(context).unfocus();
+
     handleSubmitted(
       text,
       _messageController,
@@ -54,6 +82,24 @@ class _ChatViewPageState extends State<ChatViewPage>
 
   void _showLogoutConfirmationDialog() {
     LogoutDialog.show(context, () => handleLogout(_authBloc));
+  }
+
+  void _onActionButtonPressed(String message) {
+    _messageController.text = message;
+  }
+
+  void _startNewChat() {
+    // Check if it's already a new chat (no sessionId and no messages)
+    final isAlreadyNewChat =
+        (widget.sessionId == null || widget.sessionId!.isEmpty) &&
+        _messages.isEmpty;
+
+    if (!isAlreadyNewChat) {
+      // Clear current messages and reset to new chat
+      setState(() {
+        _messages.clear();
+      });
+    }
   }
 
   @override
@@ -70,48 +116,125 @@ class _ChatViewPageState extends State<ChatViewPage>
         ),
       ],
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           surfaceTintColor: Colors.transparent,
           backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: const Icon(Icons.chat_bubble_rounded),
-            onPressed: () {
-              // Navigate to chat history page
-              context.router.push(const ChatHistoryRoute());
-            },
-          ),
-          centerTitle: true,
-          title: Text(
-            "NEXORA",
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+          elevation: 0,
+          leadingWidth: 64.w,
+          leading: Padding(
+            padding: EdgeInsets.only(left: 16.w),
+            child: GestureDetector(
+              onTap: () {
+                // Navigate to chat history page
+                context.router.push(const ChatHistoryRoute());
+              },
+              child: CircleAvatar(
+                radius: 24.r,
+                backgroundColor: const Color(0xFF7F22FE).withValues(alpha: 0.1),
+                child: Icon(Icons.menu, color: Colors.black, size: 24.sp),
+              ),
             ),
           ),
+          centerTitle: true,
           actions: [
-            IconButton(
-              onPressed: _showLogoutConfirmationDialog,
-              icon: const Icon(Icons.logout_rounded),
+            Padding(
+              padding: EdgeInsets.only(right: 16.w),
+              child: GestureDetector(
+                onTap: _startNewChat,
+                child: CircleAvatar(
+                  radius: 24.r,
+                  backgroundColor: const Color(
+                    0xFF7F22FE,
+                  ).withValues(alpha: 0.1),
+                  child: Icon(
+                    Icons.add_circle_outline_rounded,
+                    color: const Color(0xFF7F22FE),
+                    size: 24.sp,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 16.w),
+              child: GestureDetector(
+                onTap: _showLogoutConfirmationDialog,
+                child: CircleAvatar(
+                  radius: 20.r,
+                  backgroundColor: const Color(0xFF00D4AA),
+                  backgroundImage:
+                      _userEmail != null && _getAvatarUrl().isNotEmpty
+                          ? NetworkImage(_getAvatarUrl())
+                          : null,
+                  child:
+                      _userEmail == null || _getAvatarUrl().isEmpty
+                          ? Icon(Icons.person, color: Colors.white, size: 20.sp)
+                          : null,
+                ),
+              ),
             ),
           ],
         ),
-        body: Column(
+
+        body: Stack(
           children: [
-            Expanded(
+            // Main content area
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Image.asset(
+                'assets/images/def_background.png',
+                height: ScreenUtil().screenHeight,
+                width: ScreenUtil().screenWidth,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned.fill(
+              bottom: 80.h, // Space for ChatInput
               child:
                   _messages.isEmpty
-                      ? const WelcomeContent()
+                      ? Center(
+                        child: WelcomeContent(
+                          onActionButtonPressed: _onActionButtonPressed,
+                          firstName: _userFirstName,
+                        ),
+                      )
                       : ListView.builder(
                         reverse: true,
-                        padding: const EdgeInsets.all(8.0),
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.only(
+                          left: 8.0,
+                          right: 8.0,
+                          top: 8.0,
+                          bottom:
+                              100.h, // Extra bottom margin to avoid ChatInput overlap
+                        ),
                         itemCount: _messages.length,
                         itemBuilder: (context, index) => _messages[index],
                       ),
             ),
-            ChatInput(
-              messageController: _messageController,
-              onSubmitted: _handleSubmitted,
+            // ChatInput at the bottom
+            Positioned(
+              left: 16.w,
+              right: 16.w,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 32.h,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ChatInput(
+                  messageController: _messageController,
+                  onSubmitted: _handleSubmitted,
+                ),
+              ),
             ),
           ],
         ),

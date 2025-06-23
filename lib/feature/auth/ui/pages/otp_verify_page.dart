@@ -7,7 +7,6 @@ import 'package:nexora/injector.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../../../core/config/routes/app_routes.dart';
-import '../../../../core/widgets/gradient_background.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/localization/app_localization_extension.dart';
 
