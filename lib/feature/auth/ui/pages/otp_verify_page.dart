@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nexora/feature/auth/bloc/auth_bloc.dart';
 import 'package:nexora/injector.dart';
 import 'package:pinput/pinput.dart';
@@ -24,6 +25,20 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   final otpController = TextEditingController();
   final AuthBloc _authBloc = getIt<AuthBloc>();
   bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    // Clear error when user starts typing
+    otpController.addListener(() {
+      if (_errorMessage != null) {
+        setState(() {
+          _errorMessage = null;
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -35,6 +50,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     if (otpController.text.length == 6) {
       setState(() {
         _isLoading = true;
+        _errorMessage = null;
       });
 
       // Parse the OTP code to an integer
@@ -43,17 +59,15 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         // Send both email and OTP code
         _authBloc.add(VerifyOtpRequested(widget.email, code));
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(context.l10n.invalidOtpFormat)));
         setState(() {
           _isLoading = false;
+          _errorMessage = context.l10n.invalidOtpFormat;
         });
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.enterValidSixDigitOtp)),
-      );
+      setState(() {
+        _errorMessage = context.l10n.enterValidSixDigitOtp;
+      });
     }
   }
 
@@ -64,6 +78,14 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Colors.transparent,
+        title: Center(
+          child: Image.asset(
+            'assets/images/appbar_logo.png',
+            height: 150,
+            width: 150,
+            // color: Colors.black,
+          ),
+        ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
         bloc: _authBloc,
@@ -71,6 +93,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
           if (state is AuthLoading) {
             setState(() {
               _isLoading = true;
+              _errorMessage = null;
             });
           } else {
             setState(() {
@@ -84,55 +107,98 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                 predicate: (route) => false,
               );
             } else if (state is AuthError) {
-              // Show error snackbar
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
+              // Show error below OTP input instead of SnackBar
+              setState(() {
+                _errorMessage = state.message;
+              });
             }
           }
         },
-        child: GradientBackground(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 140),
-                Image.asset(
-                  'assets/images/logo.png',
-                  height: 150,
-                  width: 150,
-                  color: Colors.black,
-                ),
-                Text(
-                  context.l10n.enterOtp,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  context.l10n.checkEmailInbox,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black26,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Pinput(controller: otpController, length: 6),
-
-                const SizedBox(height: 30),
-                PrimaryButton(
-                  label:
-                      _isLoading ? context.l10n.verifying : context.l10n.next,
-                  onPressed: _isLoading ? () {} : _verifyOtp,
-                ),
-              ],
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Image.asset(
+                'assets/images/def_background.png',
+                height: ScreenUtil().screenHeight,
+                width: ScreenUtil().screenWidth,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.all(16.0).w,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    context.l10n.enterOtp,
+                    style: TextStyle(
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    context.l10n.checkEmailInbox,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black26,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20.h),
+                  Pinput(
+                    controller: otpController,
+                    length: 6,
+                    errorPinTheme: PinTheme(
+                      width: 56.w,
+                      height: 56.h,
+                      textStyle: TextStyle(
+                        fontSize: 20.sp,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.red),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    forceErrorState: _errorMessage != null,
+                  ),
+                  // Error message display
+                  if (_errorMessage != null) ...[
+                    SizedBox(height: 8.h),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: 30.h),
+                  PrimaryButton(
+                    label:
+                        _isLoading ? context.l10n.verifying : context.l10n.next,
+                    onPressed: _isLoading ? () {} : _verifyOtp,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

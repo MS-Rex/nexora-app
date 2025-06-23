@@ -139,7 +139,7 @@ class LocalizationStrings {
     ),
     LocalizedString(key: 'home', en: 'Home', si: 'මුල් පිටුව', ta: 'முகப்பு'),
     LocalizedString(key: 'back', en: 'Back', si: 'ආපසු', ta: 'பின்'),
-    LocalizedString(key: 'next', en: 'Next', si: 'ඊළඟ', ta: 'அடுத்து'),
+    LocalizedString(key: 'next', en: 'CONTINUE', si: 'ඊළඟ', ta: 'தொடர்க'),
     LocalizedString(key: 'previous', en: 'Previous', si: 'පෙර', ta: 'முந்தைய'),
     LocalizedString(key: 'finish', en: 'Finish', si: 'අවසන්', ta: 'முடிக்க'),
     LocalizedString(key: 'skip', en: 'Skip', si: 'මගහරින්න', ta: 'தவிர்க்க'),
@@ -201,15 +201,15 @@ class LocalizationStrings {
     // OTP verification strings
     LocalizedString(
       key: 'enter_otp',
-      en: 'Enter OTP',
-      si: 'OTP ඇතුළත් කරන්න',
-      ta: 'OTP உள்ளிடவும்',
+      en: 'Enter the 6-digit code',
+      si: '6 කින් යුත් කේතයක් ඇතුළත් කරන්න',
+      ta: '6-இலக்க குறியீட்டை உள்ளிடவும்',
     ),
     LocalizedString(
       key: 'check_email_inbox',
-      en: 'Check your email inbox for a 6-digit code.',
-      si: 'ඉලක්කම් 6 කින් යුත් කේතයක් සඳහා ඔබේ ඊමේල් පෙට්ටිය පරීක්ෂා කරන්න.',
-      ta: '6-இலக்க குறியீட்டுக்காக உங்கள் மின்னஞ்சல் பெட்டியைச் சரிபார்க்கவும்.',
+      en: 'Enter the 6-digit code sent to your email to verify your identity',
+      si: 'ප්‍රවේශ කිරීමට ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න',
+      ta: 'உங்கள் மின்னஞ்சல் பெட்டியைச் சரிபார்க்கவும்',
     ),
     LocalizedString(
       key: 'verifying',
