@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nexora/injector.dart';
 import 'core/config/routes/app_routes.dart';
@@ -61,35 +62,33 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_localizationService.isInitialized) {
-      return MaterialApp(
-        home: const Scaffold(body: Center(child: CircularProgressIndicator())),
-      );
-    }
-
     return ListenableBuilder(
       listenable: _localizationService,
       builder: (context, child) {
-        return MaterialApp.router(
-          title: 'Nexora',
-          debugShowCheckedModeBanner: false,
-          locale: _localizationService.currentLocale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF6366F1),
-              primary: const Color(0xFF6366F1),
+        return ScreenUtilInit(
+          designSize: const Size(412, 917),
+
+          child: MaterialApp.router(
+            title: 'Nexora',
+            debugShowCheckedModeBanner: false,
+            locale: _localizationService.currentLocale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF6366F1),
+                primary: const Color(0xFF6366F1),
+              ),
+              textTheme: GoogleFonts.interTextTheme(),
+              useMaterial3: true,
             ),
-            textTheme: GoogleFonts.interTextTheme(),
-            useMaterial3: true,
+            routerConfig: MyApp.appRouter.config(),
           ),
-          routerConfig: MyApp.appRouter.config(),
         );
       },
     );
