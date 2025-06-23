@@ -44,15 +44,15 @@ class SignUpPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               CustomTextField(
-                label: context.l10n.name,
+                hintText: context.l10n.name,
                 controller: nameController,
               ),
               CustomTextField(
-                label: context.l10n.email,
+                hintText: context.l10n.email,
                 controller: emailController,
               ),
               CustomTextField(
-                label: context.l10n.password,
+                hintText: context.l10n.password,
                 controller: passwordController,
                 obscureText: true,
               ),

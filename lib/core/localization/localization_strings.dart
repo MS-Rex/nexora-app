@@ -26,8 +26,8 @@ class LocalizationStrings {
       si: 'සාදරයෙන් පිළිගන්නවා',
       ta: 'வரவேற்கிறோம்',
     ),
-    LocalizedString(key: 'login', en: 'Login', si: 'ප්‍රවේශය', ta: 'உள்நுழைய'),
-    LocalizedString(key: 'logout', en: 'Logout', si: 'පිටවීම', ta: 'வெளியேறு'),
+    LocalizedString(key: 'login', en: 'LOGIN', si: 'ප්‍රවේශය', ta: 'உள்நுழைய'),
+    LocalizedString(key: 'logout', en: 'LOGOUT', si: 'පිටවීම', ta: 'வெளியேறு'),
     LocalizedString(
       key: 'register',
       en: 'Register',
@@ -154,15 +154,17 @@ class LocalizationStrings {
     // Login screen specific strings
     LocalizedString(
       key: 'welcome_exclamation',
-      en: 'Welcome !',
-      si: 'සාදරයෙන් පිළිගන්නවා !',
-      ta: 'வரவேற்கிறோம் !',
+      en: 'Continue to Login',
+      si: 'ප්‍රවේශය කිරීමට පවත්වා ගන්න',
+      ta: 'உள்நுழையவும் தொடரவும்',
     ),
     LocalizedString(
       key: 'login_to_nexora',
-      en: 'Login to Nexora',
-      si: 'නෙක්සෝරා වෙත ප්‍රවේශ වන්න',
-      ta: 'நெக்சோராவில் உள்நுழையவும்',
+      en:
+          'Enter your email address to receive a one time password (OTP) for verification.',
+      si: 'ප්‍රවේශ කිරීමට ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න',
+      ta:
+          'சரிபார்ப்புக்கு ஒரு முறை கடவுச்சொல் (OTP) பெற உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்',
     ),
     LocalizedString(
       key: 'processing',

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nexora/core/config/routes/app_routes.dart';
 import 'package:nexora/feature/auth/bloc/auth_bloc.dart';
 import 'package:nexora/injector.dart';
@@ -200,6 +201,14 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
+        title: Center(
+          child: Image.asset(
+            'assets/images/appbar_logo.png',
+            height: 150,
+            width: 150,
+            // color: Colors.black,
+          ),
+        ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
         bloc: _authBloc,
@@ -224,70 +233,98 @@ class _LoginPageState extends State<LoginPage> {
             }
           }
         },
-        child: GradientBackground(
-          child: SafeArea(
-            child: Column(
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Image.asset(
+                'assets/images/def_background.png',
+                height: ScreenUtil().screenHeight,
+                width: ScreenUtil().screenWidth,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Column(
               children: [
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(16),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 140),
-                          Image.asset(
-                            'assets/images/logo.png',
-                            height: 150,
-                            width: 150,
-                            color: Colors.black,
-                          ),
-                          Text(
-                            context.l10n.welcomeExclamation,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(16),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // const SizedBox(height: 140),
+                            // Image.asset(
+                            //   'assets/images/logo.png',
+                            //   height: 150,
+                            //   width: 150,
+                            //   color: Colors.black,
+                            // ),
+                            Text(
+                              context.l10n.welcomeExclamation,
+                              style: TextStyle(
+                                fontSize: 28.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            context.l10n.loginToNexora,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black26,
+                            SizedBox(height: 8),
+                            Text(
+                              context.l10n.loginToNexora,
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black26,
+                                height: 1.5,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            label: context.l10n.email,
-                            controller: emailController,
-                            validator: _validateEmail,
-                          ),
-                          const SizedBox(height: 30),
-                          PrimaryButton(
-                            label:
-                                _isLoading
-                                    ? context.l10n.processing
-                                    : context.l10n.login,
-                            onPressed: _isLoading ? () {} : _handleLogin,
-                          ),
-                          const SizedBox(height: 40),
-                        ],
+                            SizedBox(height: 48.h),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                context.l10n.email,
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            CustomTextField(
+                              hintText: "you@example.com",
+                              controller: emailController,
+                              validator: _validateEmail,
+                            ),
+                            const SizedBox(height: 30),
+                            PrimaryButton(
+                              label:
+                                  _isLoading
+                                      ? context.l10n.processing
+                                      : context.l10n.login,
+                              onPressed: _isLoading ? () {} : _handleLogin,
+                            ),
+                            const SizedBox(height: 40),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
                 // Language selector at bottom
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 30),
-                  child: Center(child: _buildLanguageSelectorButton()),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 30),
+                //   child: Center(child: _buildLanguageSelectorButton()),
+                // ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

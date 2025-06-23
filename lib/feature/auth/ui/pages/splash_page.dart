@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nexora/feature/auth/repository/auth_repository.dart';
 import 'package:nexora/injector.dart';
 
@@ -51,7 +52,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Color.fromARGB(255, 124, 58, 237),
       body: Stack(
         children: [
           Positioned(
@@ -61,8 +61,8 @@ class _SplashPageState extends State<SplashPage> {
             bottom: 0,
             child: Image.asset(
               'assets/images/splash_bg.png',
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
+              height: ScreenUtil().screenHeight,
+              width: ScreenUtil().screenWidth,
               fit: BoxFit.cover,
             ),
           ),
