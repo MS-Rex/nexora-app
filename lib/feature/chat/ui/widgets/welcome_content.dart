@@ -1,72 +1,138 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nexora/core/localization/app_localization_extension.dart';
 
 class WelcomeContent extends StatelessWidget {
-  const WelcomeContent({super.key});
+  final Function(String)? onActionButtonPressed;
+  final String? firstName;
+
+  const WelcomeContent({super.key, this.onActionButtonPressed, this.firstName});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
+      color: Colors.transparent,
+      padding: EdgeInsets.all(20.w),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // NEXORA Logo/Text
-          const Text(
-            "NEXORA",
+          // Greeting message
+          Text(
+            firstName != null && firstName!.isNotEmpty
+                ? "Hey $firstName, how can I help you today?"
+                : "Hey there, how can I help you today?",
             style: TextStyle(
-              fontSize: 32,
+              fontSize: 24.sp,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              letterSpacing: 2,
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 80),
-          // Welcome suggestion widget
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-              color: const Color(0xFFE8E3FF), // Light purple background
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(
-                      0xFF7C3AED,
-                    ), // Purple background for icon
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.lightbulb_outline,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    context.l10n.askMeAnything,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          SizedBox(height: 16.h),
+          // Description
+          Text(
+            "I'm Nexora, your campus AI assistant. I can help you find class schedules and bus schedules, cafeteria menus, and many more",
+            style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 24.h),
+          // Action buttons in 2x2 grid
+          GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.w,
+            mainAxisSpacing: 12.h,
+            childAspectRatio: 1.8,
+            children: [
+              _buildActionButton(
+                context,
+                icon: Icons.calendar_today,
+                iconColor: const Color(0xFF3B82F6),
+                backgroundColor: const Color(0xFFDCEEFF),
+                title: "Class Schedule",
+                onTap: () {
+                  onActionButtonPressed?.call(
+                    "Give me information about Class Schedule",
+                  );
+                },
+              ),
+              _buildActionButton(
+                context,
+                icon: Icons.directions_bus,
+                iconColor: const Color(0xFF10B981),
+                backgroundColor: const Color(0xFFD1FAE5),
+                title: "Bus Timing",
+                onTap: () {
+                  onActionButtonPressed?.call(
+                    "Give me information about Bus Timing",
+                  );
+                },
+              ),
+              _buildActionButton(
+                context,
+                icon: Icons.restaurant_menu,
+                iconColor: const Color(0xFF8B5CF6),
+                backgroundColor: const Color(0xFFE9D5FF),
+                title: "Cafeteria Menu",
+                onTap: () {
+                  onActionButtonPressed?.call(
+                    "Give me information about Cafeteria Menu",
+                  );
+                },
+              ),
+              _buildActionButton(
+                context,
+                icon: Icons.event,
+                iconColor: const Color(0xFFEF4444),
+                backgroundColor: const Color(0xFFFECDD3),
+                title: "Campus Events",
+                onTap: () {
+                  onActionButtonPressed?.call(
+                    "Give me information about Campus Events",
+                  );
+                },
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required Color backgroundColor,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          // color: backgroundColor,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.grey.shade300, width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: iconColor, size: 24.sp),
+            SizedBox(width: 8.w),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

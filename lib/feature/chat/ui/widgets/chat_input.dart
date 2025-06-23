@@ -1,9 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../core/config/routes/app_routes.dart';
 
-class ChatInput extends StatelessWidget {
+class ChatInput extends StatefulWidget {
   final TextEditingController messageController;
   final Function(String) onSubmitted;
 
@@ -14,44 +15,108 @@ class ChatInput extends StatelessWidget {
   });
 
   @override
+  State<ChatInput> createState() => _ChatInputState();
+}
+
+class _ChatInputState extends State<ChatInput> {
+  bool _hasText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.messageController.addListener(_onTextChanged);
+    _hasText = widget.messageController.text.isNotEmpty;
+  }
+
+  @override
+  void dispose() {
+    widget.messageController.removeListener(_onTextChanged);
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    final hasText = widget.messageController.text.trim().isNotEmpty;
+    if (hasText != _hasText) {
+      setState(() {
+        _hasText = hasText;
+      });
+    }
+  }
+
+  void _handleSendMessage() {
+    final text = widget.messageController.text.trim();
+    if (text.isNotEmpty) {
+      widget.onSubmitted(text);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: Row(
-          children: [
-            Expanded(
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(25.r),
+                border: Border.all(color: Colors.grey[300]!, width: 1),
+              ),
               child: TextField(
-                controller: messageController,
-                decoration: const InputDecoration(
-                  hintText: 'Type a message...',
+                controller: widget.messageController,
+                decoration: InputDecoration(
+                  hintText: 'Message Nexora',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 16.sp,
+                  ),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(12),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 12.h,
+                  ),
                 ),
-                onSubmitted: onSubmitted,
+                onSubmitted: widget.onSubmitted,
+                textInputAction: TextInputAction.send,
               ),
             ),
-            IconButton(
-              icon: const Icon(Iconsax.microphone_2),
-              onPressed: () {
-                // Navigate to voice chat page
-                context.router.push(const VoiceChatRoute());
-              },
+          ),
+          SizedBox(width: 12.w),
+          GestureDetector(
+            onTap:
+                _hasText
+                    ? _handleSendMessage
+                    : () {
+                      // Navigate to voice chat page
+                      context.router.push(const VoiceChatRoute());
+                    },
+            child: Container(
+              width: 44.w,
+              height: 44.h,
+              decoration: BoxDecoration(
+                color: const Color(0xFF7C3AED),
+                borderRadius: BorderRadius.circular(22.r),
+              ),
+              child: Icon(
+                _hasText ? Icons.send : Iconsax.microphone_2,
+                color: Colors.white,
+                size: 20.sp,
+              ),
             ),
-            IconButton(
-              icon: const Icon(Iconsax.send_1),
-              onPressed: () {
-                if (messageController.text.isNotEmpty) {
-                  onSubmitted(messageController.text);
-                }
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
