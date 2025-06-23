@@ -456,9 +456,11 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
 
           // Instead of sending streaming chunks, send complete audio
           final message = jsonEncode({
-            'type': 'complete_audio',
-            'audio': base64Audio,
-            'client_id': _clientId,
+            'type': 'audio_chunk',
+            'data': base64Audio,
+            'format': 'wav',
+            'sample_rate': 16000,
+            'channels': 1,
           });
 
           logger.d("🔍 Encoding to base64...");
