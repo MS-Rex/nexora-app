@@ -7,7 +7,6 @@ import 'package:nexora/feature/auth/bloc/auth_bloc.dart';
 import 'package:nexora/injector.dart';
 
 import '../../../../core/widgets/custom_text_field.dart';
-import '../../../../core/widgets/gradient_background.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/localization/app_localization_extension.dart';
 import '../../../../core/localization/localization_service.dart';
