@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.3.3
   bloc: ^8.1.4
   logger: ^2.5.0
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   sentry_dart_plugin: ^2.4.1

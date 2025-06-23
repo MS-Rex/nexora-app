@@ -51,9 +51,21 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 124, 58, 237),
+      // backgroundColor: Color.fromARGB(255, 124, 58, 237),
       body: Stack(
         children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Image.asset(
+              'assets/images/splash_bg.png',
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.cover,
+            ),
+          ),
           Positioned(
             top: 0,
             left: 0,
