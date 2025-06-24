@@ -37,61 +37,77 @@ class WelcomeContent extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24.h),
-          // Action buttons in 2x2 grid
-          GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            crossAxisSpacing: 16.w,
-            mainAxisSpacing: 12.h,
-            childAspectRatio: 1.8,
+          // Action buttons in 2 rows
+          Column(
             children: [
-              _buildActionButton(
-                context,
-                icon: Icons.calendar_today,
-                iconColor: const Color(0xFF3B82F6),
-                backgroundColor: const Color(0xFFDCEEFF),
-                title: "Class Schedule",
-                onTap: () {
-                  onActionButtonPressed?.call(
-                    "Give me information about Class Schedule",
-                  );
-                },
+              // First row
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionButton(
+                      context,
+                      icon: Icons.calendar_today,
+                      iconColor: const Color(0xFF3B82F6),
+                      backgroundColor: const Color(0xFFDCEEFF),
+                      title: "Class Schedule",
+                      onTap: () {
+                        onActionButtonPressed?.call(
+                          "Give me information about Class Schedule",
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: _buildActionButton(
+                      context,
+                      icon: Icons.directions_bus,
+                      iconColor: const Color(0xFF10B981),
+                      backgroundColor: const Color(0xFFD1FAE5),
+                      title: "Bus Timing",
+                      onTap: () {
+                        onActionButtonPressed?.call(
+                          "Give me information about Bus Timing",
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-              _buildActionButton(
-                context,
-                icon: Icons.directions_bus,
-                iconColor: const Color(0xFF10B981),
-                backgroundColor: const Color(0xFFD1FAE5),
-                title: "Bus Timing",
-                onTap: () {
-                  onActionButtonPressed?.call(
-                    "Give me information about Bus Timing",
-                  );
-                },
-              ),
-              _buildActionButton(
-                context,
-                icon: Icons.restaurant_menu,
-                iconColor: const Color(0xFF8B5CF6),
-                backgroundColor: const Color(0xFFE9D5FF),
-                title: "Cafeteria Menu",
-                onTap: () {
-                  onActionButtonPressed?.call(
-                    "Give me information about Cafeteria Menu",
-                  );
-                },
-              ),
-              _buildActionButton(
-                context,
-                icon: Icons.event,
-                iconColor: const Color(0xFFEF4444),
-                backgroundColor: const Color(0xFFFECDD3),
-                title: "Campus Events",
-                onTap: () {
-                  onActionButtonPressed?.call(
-                    "Give me information about Campus Events",
-                  );
-                },
+              SizedBox(height: 12.h),
+              // Second row
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionButton(
+                      context,
+                      icon: Icons.restaurant_menu,
+                      iconColor: const Color(0xFF8B5CF6),
+                      backgroundColor: const Color(0xFFE9D5FF),
+                      title: "Cafeteria Menu",
+                      onTap: () {
+                        onActionButtonPressed?.call(
+                          "Give me information about Cafeteria Menu",
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: _buildActionButton(
+                      context,
+                      icon: Icons.event,
+                      iconColor: const Color(0xFFEF4444),
+                      backgroundColor: const Color(0xFFFECDD3),
+                      title: "Campus Events",
+                      onTap: () {
+                        onActionButtonPressed?.call(
+                          "Give me information about Campus Events",
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -111,25 +127,28 @@ class WelcomeContent extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(12.w),
+        height: 56.h, // Explicit height constraint
         decoration: BoxDecoration(
-          // color: backgroundColor,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Colors.grey.shade300, width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: iconColor, size: 24.sp),
-            SizedBox(width: 8.w),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+            Icon(icon, color: iconColor, size: 20.sp), // Reduced icon size
+            SizedBox(width: 6.w), // Reduced spacing
+            Flexible(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12.sp, // Reduced font size
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),

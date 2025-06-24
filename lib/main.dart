@@ -67,7 +67,6 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return ScreenUtilInit(
           designSize: const Size(412, 917),
-
           child: MaterialApp.router(
             title: 'Nexora',
             debugShowCheckedModeBanner: false,
