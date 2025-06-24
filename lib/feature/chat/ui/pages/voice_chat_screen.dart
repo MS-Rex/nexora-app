@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
@@ -13,6 +15,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/localization/app_localization_extension.dart';
 import '../../../../core/common/logger/app_logger.dart';
+
+enum VoiceChatState {
+  idle,
+  listening,
+  processing,
+  aiSpeaking;
+
+  bool get isIdle => this == VoiceChatState.idle;
+  bool get isListening => this == VoiceChatState.listening;
+  bool get isProcessing => this == VoiceChatState.processing;
+  bool get isAiSpeaking => this == VoiceChatState.aiSpeaking;
+
+  bool get shouldShowStopIcon => isProcessing;
+  bool get shouldShowSendIcon => isListening;
+  bool get shouldShowMicIcon => isIdle;
+  bool get shouldShowWaveAnimation => isAiSpeaking;
+}
 
 @RoutePage()
 class VoiceChatScreen extends StatefulWidget {
@@ -29,9 +48,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   late Animation<double> _waveAnimation;
   late Animation<double> _pulseAnimation;
 
-  bool _isListening = false;
-  bool _isAISpeaking = false;
-  String _statusText = "Hello! How may I assist you today?";
+  VoiceChatState _currentState = VoiceChatState.idle;
+  String _statusText = "Tap to start speaking";
 
   // Audio recording and WebSocket
   final AudioRecorder _audioRecorder = AudioRecorder();
@@ -69,6 +87,41 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
 
     // Start breathing animation
     _pulseController.repeat(reverse: true);
+  }
+
+  void _setState(VoiceChatState newState, {String? statusText}) {
+    if (mounted) {
+      setState(() {
+        _currentState = newState;
+        if (statusText != null) {
+          _statusText = statusText;
+        }
+      });
+
+      // Handle animations based on state
+      switch (newState) {
+        case VoiceChatState.idle:
+          _pulseController.stop();
+          _pulseController.reset();
+          _pulseController.repeat(
+            reverse: true,
+          ); // breathing animation for idle
+          _waveController.stop();
+          _waveController.reset();
+          break;
+        case VoiceChatState.listening:
+        case VoiceChatState.processing:
+          _pulseController.repeat(reverse: true);
+          _waveController.stop();
+          _waveController.reset();
+          break;
+        case VoiceChatState.aiSpeaking:
+          _pulseController.stop();
+          _pulseController.reset();
+          _waveController.repeat();
+          break;
+      }
+    }
   }
 
   /// Check and request microphone permission
@@ -181,26 +234,25 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
 
       switch (message['type']) {
         case 'transcription':
-          if (mounted) {
-            setState(() {
-              _statusText = "You said: \"${message['text']}\"";
-            });
-          }
+          _setState(
+            VoiceChatState.idle,
+            statusText: "You said: \"${message['text']}\"",
+          );
           break;
         case 'response_audio':
           _playResponseAudio(message['data']);
-          if (message['text'] != null && mounted) {
-            setState(() {
-              _statusText = "AI: \"${message['text']}\"";
-            });
+          if (message['text'] != null) {
+            _setState(
+              VoiceChatState.aiSpeaking,
+              statusText: "AI: \"${message['text']}\"",
+            );
           }
           break;
         case 'processing':
-          if (mounted) {
-            setState(() {
-              _statusText = message['message'] ?? 'AI is thinking...';
-            });
-          }
+          _setState(
+            VoiceChatState.aiSpeaking,
+            statusText: message['message'] ?? 'AI is thinking...',
+          );
           break;
         case 'pong':
           logger.d("🏓 Pong received from server");
@@ -211,7 +263,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           }
           // Reset to ready state after 2 seconds
           Future.delayed(const Duration(seconds: 2), () {
-            if (mounted && !_isListening && !_isAISpeaking) {
+            if (mounted && _currentState.isIdle) {
               setState(() {
                 _statusText = context.l10n.tapToStartSpeaking;
               });
@@ -219,12 +271,10 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           });
           break;
         case 'error':
-          if (mounted) {
-            // _showErrorDialog(message['message'] ?? 'Unknown error');
-            setState(() {
-              _statusText = "Error occurred - Try again";
-            });
-          }
+          _setState(
+            VoiceChatState.idle,
+            statusText: "Error occurred - Try again",
+          );
           break;
         default:
           logger.w("Unknown message type: ${message['type']}");
@@ -265,36 +315,22 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       );
       await tempFile.writeAsBytes(audioBytes);
 
-      if (mounted) {
-        setState(() {
-          _isAISpeaking = true;
-          _statusText = "AI is responding...";
-          _waveController.repeat();
-        });
-      }
+      _setState(VoiceChatState.aiSpeaking, statusText: "AI is responding...");
 
       await _audioPlayer.play(DeviceFileSource(tempFile.path));
 
       // Clean up after playing
       await tempFile.delete();
-      if (mounted) {
-        setState(() {
-          _isAISpeaking = false;
-          _statusText = context.l10n.tapToStartSpeaking;
-          _waveController.stop();
-          _waveController.reset();
-        });
-      }
+      _setState(
+        VoiceChatState.idle,
+        statusText: context.l10n.tapToStartSpeaking,
+      );
     } catch (e) {
       logger.e("Error playing audio: $e", e);
-      if (mounted) {
-        setState(() {
-          _isAISpeaking = false;
-          _statusText = context.l10n.tapToStartSpeaking;
-          _waveController.stop();
-          _waveController.reset();
-        });
-      }
+      _setState(
+        VoiceChatState.idle,
+        statusText: context.l10n.tapToStartSpeaking,
+      );
     }
   }
 
@@ -322,41 +358,52 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
       }
     }
 
-    if (_isListening) {
-      // Just stop recording, keep WebSocket connected for response
-      await _stopRecording();
-    } else {
-      // If AI is currently speaking, stop the audio first
-      if (_isAISpeaking) {
+    switch (_currentState) {
+      case VoiceChatState.processing:
+        // Stop processing and reset to ready state
+        _setState(
+          VoiceChatState.idle,
+          statusText: context.l10n.tapToStartSpeaking,
+        );
+        break;
+      case VoiceChatState.listening:
+        // Stop recording, keep WebSocket connected for response
+        await _stopRecording();
+        break;
+      case VoiceChatState.aiSpeaking:
+        // Stop AI audio and start listening immediately
         await _audioPlayer.stop();
-        if (mounted) {
-          setState(() {
-            _isAISpeaking = false;
-            _waveController.stop();
-            _waveController.reset();
-          });
+        if (_isConnected) {
+          await _startRecording();
+        } else {
+          _setState(
+            VoiceChatState.idle,
+            statusText: "Tap again to retry connection",
+          );
         }
-      }
-
-      // Connect to WebSocket if not already connected, then start recording
-      if (!_isConnected) {
-        await _connectWebSocket();
-      }
-      if (_isConnected) {
-        await _startRecording();
-      } else {
-        // If still not connected, update status
-        if (mounted) {
-          setState(() {
-            _statusText = "Tap again to retry connection";
-          });
+        break;
+      case VoiceChatState.idle:
+        // Connect to WebSocket if not already connected, then start recording
+        if (!_isConnected) {
+          await _connectWebSocket();
         }
-      }
+        if (_isConnected) {
+          await _startRecording();
+        } else {
+          // If still not connected, update status
+          if (mounted) {
+            setState(() {
+              _statusText = "Tap again to retry connection";
+            });
+          }
+        }
+        break;
     }
   }
 
   Future<void> _startRecording() async {
-    if (_isListening || !_hasMicPermission || !_isConnected) return;
+    if (_currentState.isListening || !_hasMicPermission || !_isConnected)
+      return;
 
     try {
       logger.d("🔍 Starting recording to: $_currentRecordingPath");
@@ -377,15 +424,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
 
       logger.d("🔍 Recording started successfully");
 
-      if (mounted) {
-        setState(() {
-          _isListening = true;
-          _isAISpeaking = false;
-          _statusText = "Recording... Tap again to stop";
-          _pulseController.repeat(reverse: true);
-          _waveController.stop();
-        });
-      }
+      _setState(VoiceChatState.listening, statusText: "Tap to Send");
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -396,7 +435,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   }
 
   Future<void> _stopRecording() async {
-    if (!_isListening) return;
+    if (!_currentState.isListening) return;
 
     try {
       logger.d("🔍 Stopping recording...");
@@ -412,14 +451,10 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         await _sendCompleteAudio();
         logger.d("🔍 _sendCompleteAudio finished");
 
-        if (mounted) {
-          setState(() {
-            _isListening = false;
-            _pulseController.stop();
-            _pulseController.reset();
-            _statusText = "Processing your message...";
-          });
-        }
+        _setState(
+          VoiceChatState.processing,
+          statusText: "Processing... Tap to stop",
+        );
       }
     } catch (e) {
       logger.e("❌ Error stopping recording: $e", e);
@@ -548,218 +583,197 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
     );
   }
 
-  void _simulateAISpeaking() {
-    if (mounted) {
-      setState(() {
-        _isAISpeaking = true;
-        _isListening = false;
-        _statusText = "AI is responding...";
-        _pulseController.stop();
-        _pulseController.reset();
-        _waveController.repeat();
-      });
-    }
-
-    // Simulate AI speaking for a few seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _isAISpeaking = false;
-          _statusText = context.l10n.tapToStartSpeaking;
-          _waveController.stop();
-          _waveController.reset();
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/images/def_background.png',
+            width: ScreenUtil().screenWidth,
+            height: ScreenUtil().screenHeight,
+            fit: BoxFit.cover,
           ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black87),
-            onPressed: () => context.router.pop(),
-          ),
-        ),
-        centerTitle: true,
-        title: const Text(
-          "NEXORA VOICE CHAT",
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // Status message in chat bubble style
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // AI Voice Animation
-                    Container(
-                      width: 200,
-                      height: 200,
-                      margin: const EdgeInsets.only(bottom: 30),
-                      child: _buildAnimatedVoiceCircle(),
+          Positioned(
+            top: ScreenUtil().statusBarHeight,
+            left: 0,
+            right: 0,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color(0xFF7F22FE)),
+                  onPressed: () => context.router.pop(),
+                ),
+                Expanded(
+                  child: const Text(
+                    "Voice Chat",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
-
-                    // Status message in chat bubble
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        _statusText,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          height: 1.4,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    // Connection status indicators
-                    Row(
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: Icon(
+                    Iconsax.wifi,
+                    color: Color(0xFF189210),
+                    size: 24.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+              child: Column(
+                children: [
+                  // Status message in chat bubble style
+                  Expanded(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildStatusIndicator(
-                          icon:
-                              _hasMicPermission
-                                  ? Iconsax.microphone
-                                  : Iconsax.microphone_slash,
-                          label:
-                              _hasMicPermission
-                                  ? context.l10n.microphoneReady
-                                  : "Microphone Access Needed",
-                          isActive: _hasMicPermission,
+                        // AI Voice Animation
+                        Container(
+                          width: 200,
+                          height: 200,
+                          margin: const EdgeInsets.only(bottom: 30),
+                          child: _buildAnimatedVoiceCircle(),
                         ),
-                        const SizedBox(width: 20),
-                        _buildStatusIndicator(
-                          icon:
-                              _isConnected ? Iconsax.wifi : Iconsax.cloud_cross,
-                          label:
-                              _isConnected
-                                  ? context.l10n.connected
-                                  : context.l10n.disconnected,
-                          isActive: _isConnected,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
 
-              // Bottom section with mic button and controls
-              Column(
-                children: [
-                  // Mic button with pulse animation
-                  GestureDetector(
-                    onTap: _toggleListening,
-                    child: AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: _isListening ? _pulseAnimation.value : 1.0,
-                          child: Container(
-                            width: 80,
-                            height: 80,
+                        // Connection status indicators
+                        if (!_hasMicPermission)
+                          Container(
+                            width: 236.w,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 18.w,
+                              vertical: 18.h,
+                            ),
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors:
-                                    _isListening
-                                        ? [
-                                          const Color(0xFFEF4444),
-                                          const Color(0xFFDC2626),
-                                        ]
-                                        : [
-                                          const Color(0xFF7C3AED),
-                                          const Color(0xFF8B5CF6),
-                                        ],
+                              color: Color(0xFFC49C2D).withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(10.r),
+                              border: Border.all(
+                                color: Color(0xFFC49C2D),
+                                width: 1.w,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (_isListening
-                                          ? const Color(0xFFEF4444)
-                                          : const Color(0xFF7C3AED))
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 20,
-                                  spreadRadius: 0,
-                                  offset: const Offset(0, 10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.mic_off_outlined,
+                                  color: Color(0xFFC49C2D),
+                                  size: 24.sp,
+                                ),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  'No Microphone Access',
+                                  style: TextStyle(
+                                    color: Color(0xFFC49C2D),
+                                    fontSize: 14.sp,
+                                  ),
                                 ),
                               ],
                             ),
-                            child: Icon(
-                              _isListening ? Iconsax.stop : Iconsax.microphone,
-                              size: 35,
-                              color: Colors.white,
+                          ),
+                        if (!_isConnected)
+                          Container(
+                            width: 236.w,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 18.w,
+                              vertical: 18.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFC49C2D).withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(10.r),
+                              border: Border.all(
+                                color: Color(0xFFC49C2D),
+                                width: 1.w,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons
+                                      .signal_wifi_connected_no_internet_4_outlined,
+                                  color: Color(0xFFC49C2D),
+                                  size: 24.sp,
+                                ),
+                                SizedBox(width: 10.w),
+                                Text(
+                                  'Not Connected',
+                                  style: TextStyle(
+                                    color: Color(0xFFC49C2D),
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
+                      ],
                     ),
                   ),
 
-                  const SizedBox(height: 20),
-
-                  // Instructions
-                  Text(
-                    _isListening
-                        ? "Listening... Tap to stop"
-                        : context.l10n.tapToStartSpeaking,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  // Bottom section with mic button and controls
+                  Column(
+                    children: [
+                      // Instructions
+                      Text(
+                        _statusText,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 32.h),
+                      GestureDetector(
+                        onTap: _toggleListening,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Color(0xFF7C3AED), Color(0xFF8B5CF6)],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF7C3AED,
+                                ).withValues(alpha: 0.3),
+                                blurRadius: 20,
+                                spreadRadius: 0,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            _currentState.shouldShowStopIcon
+                                ? Icons.stop
+                                : _currentState.shouldShowSendIcon
+                                ? Icons.send
+                                : Icons.mic,
+                            size: 35,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -768,44 +782,18 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Outermost wave circle (when AI is speaking)
-        if (_isAISpeaking)
+        if (!_currentState.shouldShowWaveAnimation)
           AnimatedBuilder(
-            animation: _waveAnimation,
+            animation: _pulseAnimation,
             builder: (context, child) {
               return Container(
-                width: 200 - (_waveAnimation.value * 30),
-                height: 200 - (_waveAnimation.value * 30),
+                width: 180 * _pulseAnimation.value,
+                height: 180 * _pulseAnimation.value,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(
-                        0xFF7C3AED,
-                      ).withValues(alpha: 0.1 + (_waveAnimation.value * 0.2)),
-                      const Color(0xFF7C3AED).withValues(alpha: 0.05),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
-        // Second wave circle
-        if (_isAISpeaking)
-          AnimatedBuilder(
-            animation: _waveAnimation,
-            builder: (context, child) {
-              return Container(
-                width: 160 - (_waveAnimation.value * 20),
-                height: 160 - (_waveAnimation.value * 20),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(
-                        0xFF8B5CF6,
-                      ).withValues(alpha: 0.2 + (_waveAnimation.value * 0.3)),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.25),
                       const Color(0xFF8B5CF6).withValues(alpha: 0.1),
                     ],
                   ),
@@ -813,32 +801,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
               );
             },
           ),
-
-        // Third wave circle
-        if (_isAISpeaking)
-          AnimatedBuilder(
-            animation: _waveAnimation,
-            builder: (context, child) {
-              return Container(
-                width: 120 - (_waveAnimation.value * 10),
-                height: 120 - (_waveAnimation.value * 10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(
-                        0xFFA855F7,
-                      ).withValues(alpha: 0.3 + (_waveAnimation.value * 0.4)),
-                      const Color(0xFFA855F7).withValues(alpha: 0.15),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
-        // Breathing circles (when idle)
-        if (!_isAISpeaking && !_isListening)
+        if (!_currentState.shouldShowWaveAnimation)
           AnimatedBuilder(
             animation: _pulseAnimation,
             builder: (context, child) {
@@ -857,8 +820,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
               );
             },
           ),
-
-        if (!_isAISpeaking && !_isListening)
+        if (!_currentState.shouldShowWaveAnimation)
           AnimatedBuilder(
             animation: _pulseAnimation,
             builder: (context, child) {
@@ -877,21 +839,19 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
               );
             },
           ),
-
-        // Listening state circles
-        if (_isListening)
+        if (!_currentState.shouldShowWaveAnimation)
           AnimatedBuilder(
             animation: _pulseAnimation,
             builder: (context, child) {
               return Container(
-                width: 120 * _pulseAnimation.value,
-                height: 120 * _pulseAnimation.value,
+                width: 60 * _pulseAnimation.value,
+                height: 60 * _pulseAnimation.value,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFEF4444).withValues(alpha: 0.3),
-                      const Color(0xFFEF4444).withValues(alpha: 0.1),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.05),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.05),
                     ],
                   ),
                 ),
@@ -900,87 +860,12 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           ),
 
         // Core circle
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors:
-                  _isListening
-                      ? [const Color(0xFFEF4444), const Color(0xFFDC2626)]
-                      : _isAISpeaking
-                      ? [const Color(0xFF7C3AED), const Color(0xFF8B5CF6)]
-                      : [const Color(0xFF7C3AED), const Color(0xFF8B5CF6)],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: (_isListening
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFF7C3AED))
-                    .withValues(alpha: 0.4),
-                blurRadius: 20,
-                spreadRadius: 0,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Icon(
-            _isListening
-                ? Iconsax.microphone
-                : _isAISpeaking
-                ? Iconsax.sound
-                : Iconsax.cpu,
-            size: 35,
-            color: Colors.white,
-          ),
+        SvgPicture.asset(
+          'assets/images/app_logo.svg',
+          width: 60.w,
+          height: 16.h,
         ),
       ],
-    );
-  }
-
-  Widget _buildStatusIndicator({
-    required IconData icon,
-    required String label,
-    required bool isActive,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color:
-            isActive
-                ? const Color(0xFF10B981).withValues(alpha: 0.1)
-                : Colors.red.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color:
-              isActive
-                  ? const Color(0xFF10B981).withValues(alpha: 0.3)
-                  : Colors.red.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? const Color(0xFF10B981) : Colors.red,
-            size: 16,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              color: isActive ? const Color(0xFF10B981) : Colors.red,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

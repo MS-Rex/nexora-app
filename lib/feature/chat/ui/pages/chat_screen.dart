@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/config/routes/app_routes.dart';
 import '../../../../feature/auth/bloc/auth_bloc.dart';
 import '../../../../feature/chat/ui/bloc/chat_bloc.dart';
@@ -117,65 +118,6 @@ class _ChatViewPageState extends State<ChatViewPage>
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leadingWidth: 64.w,
-          leading: Padding(
-            padding: EdgeInsets.only(left: 16.w),
-            child: GestureDetector(
-              onTap: () {
-                // Navigate to chat history page
-                context.router.push(const ChatHistoryRoute());
-              },
-              child: CircleAvatar(
-                radius: 24.r,
-                backgroundColor: const Color(0xFF7F22FE).withValues(alpha: 0.1),
-                child: Icon(Icons.menu, color: Colors.black, size: 24.sp),
-              ),
-            ),
-          ),
-          centerTitle: true,
-          actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 16.w),
-              child: GestureDetector(
-                onTap: _startNewChat,
-                child: CircleAvatar(
-                  radius: 24.r,
-                  backgroundColor: const Color(
-                    0xFF7F22FE,
-                  ).withValues(alpha: 0.1),
-                  child: Icon(
-                    Icons.add_circle_outline_rounded,
-                    color: const Color(0xFF7F22FE),
-                    size: 24.sp,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: 16.w),
-              child: GestureDetector(
-                onTap: _showLogoutConfirmationDialog,
-                child: CircleAvatar(
-                  radius: 20.r,
-                  backgroundColor: const Color(0xFF00D4AA),
-                  backgroundImage:
-                      _userEmail != null && _getAvatarUrl().isNotEmpty
-                          ? NetworkImage(_getAvatarUrl())
-                          : null,
-                  child:
-                      _userEmail == null || _getAvatarUrl().isEmpty
-                          ? Icon(Icons.person, color: Colors.white, size: 20.sp)
-                          : null,
-                ),
-              ),
-            ),
-          ],
-        ),
-
         body: Stack(
           children: [
             // Main content area
@@ -191,7 +133,87 @@ class _ChatViewPageState extends State<ChatViewPage>
                 fit: BoxFit.cover,
               ),
             ),
+            // Custom app bar using Row
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 8.h,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Menu button
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to chat history page
+                        context.router.push(const ChatHistoryRoute());
+                      },
+                      child: CircleAvatar(
+                        radius: 24.r,
+                        backgroundColor: const Color(
+                          0xFF7F22FE,
+                        ).withValues(alpha: 0.1),
+                        child: Icon(
+                          Icons.menu,
+                          color: Colors.black,
+                          size: 24.sp,
+                        ),
+                      ),
+                    ),
+                    // Right side actions
+                    Row(
+                      children: [
+                        // New chat button
+                        GestureDetector(
+                          onTap: _startNewChat,
+                          child: CircleAvatar(
+                            radius: 24.r,
+                            backgroundColor: const Color(
+                              0xFF7F22FE,
+                            ).withValues(alpha: 0.1),
+                            child: SvgPicture.asset(
+                              'assets/images/chat_add.svg',
+                              colorFilter: ColorFilter.mode(
+                                const Color(0xFF7F22FE),
+                                BlendMode.srcIn,
+                              ),
+                              width: 24.sp,
+                              height: 24.sp,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        // Profile avatar
+                        GestureDetector(
+                          onTap: _showLogoutConfirmationDialog,
+                          child: CircleAvatar(
+                            radius: 20.r,
+                            backgroundColor: const Color(0xFF00D4AA),
+                            backgroundImage:
+                                _userEmail != null && _getAvatarUrl().isNotEmpty
+                                    ? NetworkImage(_getAvatarUrl())
+                                    : null,
+                            child:
+                                _userEmail == null || _getAvatarUrl().isEmpty
+                                    ? Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                      size: 20.sp,
+                                    )
+                                    : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Positioned.fill(
+              top:
+                  ScreenUtil().statusBarHeight +
+                  64.h, // Space for custom app bar
               bottom: 80.h, // Space for ChatInput
               child:
                   _messages.isEmpty
