@@ -28,7 +28,6 @@ class _ChatViewPageState extends State<ChatViewPage>
   final AuthBloc _authBloc = getIt<AuthBloc>();
   final ChatBloc _chatBloc = getIt<ChatBloc>();
   final TokenService _tokenService = getIt<TokenService>();
-  bool _isLoading = false;
   String? _userEmail;
   String? _userFirstName;
 

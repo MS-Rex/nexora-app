@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     
     <application
-        android:label="nexora"
+        android:label="NEXORA"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
