@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../../../core/config/routes/app_routes.dart';
 import '../../bloc/chat_history_bloc.dart';
 import '../../../../injector.dart';
@@ -43,6 +44,10 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        shadowColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        forceMaterialTransparency: true,
+        iconTheme: IconThemeData(color: Color(0xFF7F22FE)),
       ),
       body: Stack(
         children: [
@@ -67,7 +72,36 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
                 return Center(child: Text('Error: ${state.message}'));
               } else if (state is ChatHistoryLoaded) {
                 return state.chatHistory.isEmpty
-                    ? const Center(child: Text('No chat history found'))
+                    ? Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 16.h),
+
+                          SvgPicture.asset(
+                            'assets/images/no_chat_hist.svg',
+                            height: 112.h,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            'No Chats found',
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            'Once you have a chat with Nexora, it will appear in here.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                     : ListView.builder(
                       itemCount: state.chatHistory.length,
                       itemBuilder: (context, index) {
