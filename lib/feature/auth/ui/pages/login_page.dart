@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:nexora/core/config/routes/app_routes.dart';
 import 'package:nexora/feature/auth/bloc/auth_bloc.dart';
 import 'package:nexora/injector.dart';
@@ -201,11 +202,13 @@ class _LoginPageState extends State<LoginPage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         title: Center(
-          child: Image.asset(
-            'assets/images/appbar_logo.png',
-            height: 150,
-            width: 150,
-            // color: Colors.black,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 100.w),
+            child: SvgPicture.asset(
+              'assets/images/appbar_logo.svg',
+              // height: 150.w,
+              // width: 150.w,
+            ),
           ),
         ),
       ),

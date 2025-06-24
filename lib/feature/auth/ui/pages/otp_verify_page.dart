@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:nexora/feature/auth/bloc/auth_bloc.dart';
 import 'package:nexora/injector.dart';
 import 'package:pinput/pinput.dart';
@@ -77,14 +78,12 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Colors.transparent,
-        title: Center(
-          child: Image.asset(
-            'assets/images/appbar_logo.png',
-            height: 150,
-            width: 150,
-            // color: Colors.black,
-          ),
-        ),
+        centerTitle: true,
+        title: SvgPicture.asset('assets/images/appbar_logo.svg'),
+        actions: [
+          // Empty widget to balance the leading back button
+          SizedBox(width: 56), // Standard back button width
+        ],
       ),
       body: BlocListener<AuthBloc, AuthState>(
         bloc: _authBloc,

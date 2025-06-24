@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
                 seedColor: const Color(0xFF6366F1),
                 primary: const Color(0xFF6366F1),
               ),
-              textTheme: GoogleFonts.interTextTheme(),
+              textTheme: GoogleFonts.manropeTextTheme(),
               useMaterial3: true,
             ),
             routerConfig: MyApp.appRouter.config(),
