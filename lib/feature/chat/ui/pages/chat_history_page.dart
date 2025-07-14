@@ -122,15 +122,15 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
                           child: ListTile(
                             title: Text(chat.title),
                             subtitle: Text(chat.lastMessage),
-                            trailing: IconButton(
-                              icon: Icon(
-                                Icons.delete_outline_rounded,
-                                color: Colors.red.shade300,
-                              ),
-                              onPressed: () {
-                                // TODO: Add delete functionality
-                              },
-                            ),
+                            // trailing: IconButton(
+                            //   icon: Icon(
+                            //     Icons.delete_outline_rounded,
+                            //     color: Colors.red.shade300,
+                            //   ),
+                            //   onPressed: () {
+                            //     // TODO: Add delete functionality
+                            //   },
+                            // ),
                             onTap: () {
                               context.router.push(
                                 ChatViewRoute(sessionId: chat.sessionId),

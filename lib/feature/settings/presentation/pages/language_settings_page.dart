@@ -1,102 +1,114 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nexora/core/localization/localization.dart';
 import 'package:nexora/core/widgets/language_selector_widget.dart';
 import 'package:nexora/injector.dart';
 
+@RoutePage()
 class LanguageSettingsPage extends StatelessWidget {
   const LanguageSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.language), elevation: 0),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Page title and description
-            Text(
-              context.l10n.selectLanguage,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _getDescriptionText(context),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Language selector
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.language,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const LanguageSelectorWidget(),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Demo content to show localization working
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _getDemoTitle(context),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildDemoContent(context),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Action buttons
-            Row(
+      body: Stack(
+        children: [
+          // Background image matching voice chat page
+          Image.asset(
+            'assets/images/def_background.png',
+            width: ScreenUtil().screenWidth,
+            height: ScreenUtil().screenHeight,
+            fit: BoxFit.cover,
+          ),
+          // Custom app bar matching voice chat page
+          Positioned(
+            top: ScreenUtil().statusBarHeight,
+            left: 0,
+            right: 0,
+            child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color(0xFF7F22FE)),
+                  onPressed: () => context.router.pop(),
+                ),
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => showLanguageSelectorBottomSheet(context),
-                    icon: const Icon(Icons.language),
-                    label: Text(_getQuickSelectText(context)),
+                  child: Text(
+                    context.l10n.language,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: () => showLanguageSelectorDialog(context),
-                    icon: const Icon(Icons.settings),
-                    label: Text(context.l10n.settings),
-                  ),
-                ),
+                SizedBox(width: 48.w), // Balance the back button
               ],
             ),
-          ],
-        ),
+          ),
+          // Main content
+          Positioned.fill(
+            top: ScreenUtil().statusBarHeight + 60.h,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(16.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Page title and description
+                  Text(
+                    context.l10n.selectLanguage,
+                    style: TextStyle(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    _getDescriptionText(context),
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Language selector
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.language,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          const LanguageSelectorWidget(),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -114,60 +126,4 @@ class LanguageSettingsPage extends StatelessWidget {
     }
   }
 
-  String _getDemoTitle(BuildContext context) {
-    final localizationService = getIt<LocalizationService>();
-    switch (localizationService.currentLocale.languageCode) {
-      case 'si':
-        return 'නියැදි සම්පත්';
-      case 'ta':
-        return 'மாதிரி உள்ளடக்கம்';
-      case 'en':
-      default:
-        return 'Sample Content';
-    }
-  }
-
-  String _getQuickSelectText(BuildContext context) {
-    final localizationService = getIt<LocalizationService>();
-    switch (localizationService.currentLocale.languageCode) {
-      case 'si':
-        return 'ඉක්මන් තේරීම';
-      case 'ta':
-        return 'விரைவு தேர்வு';
-      case 'en':
-      default:
-        return 'Quick Select';
-    }
-  }
-
-  Widget _buildDemoContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildDemoRow(context, context.l10n.welcome, Icons.waving_hand),
-        _buildDemoRow(context, context.l10n.home, Icons.home),
-        _buildDemoRow(context, context.l10n.profile, Icons.person),
-        _buildDemoRow(context, context.l10n.settings, Icons.settings),
-        _buildDemoRow(context, context.l10n.search, Icons.search),
-        _buildDemoRow(context, context.l10n.save, Icons.save),
-        _buildDemoRow(context, context.l10n.cancel, Icons.cancel),
-        _buildDemoRow(context, context.l10n.success, Icons.check_circle),
-        _buildDemoRow(context, context.l10n.error, Icons.error),
-        _buildDemoRow(context, context.l10n.loading, Icons.refresh),
-      ],
-    );
-  }
-
-  Widget _buildDemoRow(BuildContext context, String text, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 12),
-          Text(text),
-        ],
-      ),
-    );
-  }
 }

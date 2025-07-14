@@ -8,6 +8,7 @@ import '../../../feature/auth/ui/pages/splash_page.dart';
 import '../../../feature/chat/ui/pages/chat_history_page.dart';
 import '../../../feature/chat/ui/pages/chat_screen.dart';
 import '../../../feature/chat/ui/pages/voice_chat_screen.dart';
+import '../../../feature/settings/presentation/pages/language_settings_page.dart';
 
 part 'app_routes.gr.dart';
 
@@ -25,6 +26,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: ChatViewRoute.page),
     AutoRoute(page: VoiceChatRoute.page),
     AutoRoute(page: ChatHistoryRoute.page),
+    AutoRoute(page: LanguageSettingsRoute.page),
   ];
 
   @override

@@ -27,7 +27,7 @@ class LocalizationStrings {
       ta: 'வரவேற்கிறோம்',
     ),
     LocalizedString(key: 'login', en: 'LOGIN', si: 'ප්‍රවේශය', ta: 'உள்நுழைய'),
-    LocalizedString(key: 'logout', en: 'LOGOUT', si: 'පිටවීම', ta: 'வெளியேறு'),
+    LocalizedString(key: 'logout', en: 'Logout', si: 'පිටවීම', ta: 'வெளியேறு'),
     LocalizedString(
       key: 'register',
       en: 'Register',
@@ -265,6 +265,103 @@ class LocalizationStrings {
       en: 'Disconnected',
       si: 'විසන්ධි වී ඇත',
       ta: 'துண்டிக்கப்பட்டது',
+    ),
+    // Error message strings
+    LocalizedString(
+      key: 'error_connection',
+      en: 'Unable to connect. Please check your internet connection.',
+      si: 'සම්බන්ධ විය නොහැක. කරුණාකර ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න.',
+      ta: 'இணைக்க முடியவில்லை. உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_timeout',
+      en: 'Request timed out. Please try again.',
+      si: 'ඉල්ලීම කාලය ඉකුත් විය. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'கோரிக்கை காலாவதியானது. மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_network',
+      en: 'Network error occurred. Please try again.',
+      si: 'ජාල දෝෂයක් ඇති විය. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'நெட்வொர்க் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_unauthorized',
+      en: 'Session expired. Please log in again.',
+      si: 'සැසිය කල් ඉකුත් විය. කරුණාකර නැවත ප්‍රවේශ වන්න.',
+      ta: 'அமர்வு காலாவதியானது. மீண்டும் உள்நுழையவும்.',
+    ),
+    LocalizedString(
+      key: 'error_forbidden',
+      en: 'Access denied. Please contact support.',
+      si: 'ප්‍රවේශය ප්‍රතික්ෂේප විය. කරුණාකර සහයට සම්බන්ධ වන්න.',
+      ta: 'அணுகல் மறுக்கப்பட்டது. ஆதரவைத் தொடர்பு கொள்ளவும்.',
+    ),
+    LocalizedString(
+      key: 'error_invalid_credentials',
+      en: 'Invalid login credentials. Please try again.',
+      si: 'වලංගු නොවන ප්‍රවේශ විස්තර. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'தவறான உள்நுழைவு விவரங்கள். மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_token_expired',
+      en: 'Session expired. Please log in again.',
+      si: 'සැසිය කල් ඉකුත් විය. කරුණාකර නැවත ප්‍රවේශ වන්න.',
+      ta: 'அமர்வு காலாவதியானது. மீண்டும் உள்நுழையவும்.',
+    ),
+    LocalizedString(
+      key: 'error_internal_error',
+      en: 'Something went wrong. Please try again later.',
+      si: 'යමක් වැරදී ගියා. කරුණාකර පසුව නැවත උත්සාහ කරන්න.',
+      ta: 'ஏதோ தவறு நடந்தது. பின்னர் மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_service_unavailable',
+      en: 'Service temporarily unavailable. Please try again later.',
+      si: 'සේවාව තාවකාලිකව නොමැත. කරුණාකර පසුව නැවත උත්සාහ කරන්න.',
+      ta: 'சேவை தற்காலிகமாக கிடைக்கவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_bad_gateway',
+      en: 'Server error. Please try again later.',
+      si: 'සේවාදායක දෝෂය. කරුණාකර පසුව නැවත උත්සාහ කරන්න.',
+      ta: 'சர்வர் பிழை. பின்னர் மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_empty_response',
+      en: 'No response received. Please try again.',
+      si: 'ප්‍රතිචාරයක් ලැබුණේ නැත. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'பதில் எதுவும் பெறப்படவில்லை. மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_processing_error',
+      en: 'Unable to process your message. Please try again.',
+      si: 'ඔබේ පණිවිඩය සකසීමට නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'உங்கள் செய்தியை செயலாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_voice_error',
+      en: 'Voice processing failed. Please try again.',
+      si: 'කණ්ඩායම් සැකසීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'குரல் செயலாக்கம் தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_unknown',
+      en: 'An unexpected error occurred. Please try again.',
+      si: 'අනපේක්ෂිත දෝෂයක් ඇති විය. කරුණාකර නැවත උත්සාහ කරන්න.',
+      ta: 'எதிர்பாராத பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'error_validation',
+      en: 'Please check your input and try again.',
+      si: 'කරුණාකර ඔබේ ආදානය පරීක්ෂා කර නැවත උත්සාහ කරන්න.',
+      ta: 'உங்கள் உள்ளீட்டை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.',
+    ),
+    LocalizedString(
+      key: 'dismiss',
+      en: 'Dismiss',
+      si: 'ඉවත්කරන්න',
+      ta: 'நீக்கு',
     ),
   ];
 }

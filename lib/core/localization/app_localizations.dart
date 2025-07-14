@@ -120,6 +120,24 @@ class AppLocalizations {
   String get tapToStartSpeaking => translate('tap_to_start_speaking');
   String get connected => translate('connected');
   String get disconnected => translate('disconnected');
+
+  // Error message getters
+  String get errorConnection => translate('error_connection');
+  String get errorTimeout => translate('error_timeout');
+  String get errorNetwork => translate('error_network');
+  String get errorUnauthorized => translate('error_unauthorized');
+  String get errorForbidden => translate('error_forbidden');
+  String get errorInvalidCredentials => translate('error_invalid_credentials');
+  String get errorTokenExpired => translate('error_token_expired');
+  String get errorInternalError => translate('error_internal_error');
+  String get errorServiceUnavailable => translate('error_service_unavailable');
+  String get errorBadGateway => translate('error_bad_gateway');
+  String get errorEmptyResponse => translate('error_empty_response');
+  String get errorProcessingError => translate('error_processing_error');
+  String get errorVoiceError => translate('error_voice_error');
+  String get errorUnknown => translate('error_unknown');
+  String get errorValidation => translate('error_validation');
+  String get dismiss => translate('dismiss');
 }
 
 class _AppLocalizationsDelegate
