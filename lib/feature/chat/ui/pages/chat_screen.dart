@@ -225,6 +225,9 @@ class _ChatViewPageState extends State<ChatViewPage>
                       : ListView.builder(
                         reverse: true,
                         physics: const BouncingScrollPhysics(),
+                        cacheExtent: 1000.0, // Cache off-screen items for smoother scrolling
+                        addAutomaticKeepAlives: true, // Keep widgets alive when scrolled off-screen
+                        addRepaintBoundaries: true, // Isolate repaints per item
                         padding: EdgeInsets.only(
                           left: 8.0,
                           right: 8.0,
@@ -233,7 +236,9 @@ class _ChatViewPageState extends State<ChatViewPage>
                               100.h, // Extra bottom margin to avoid ChatInput overlap
                         ),
                         itemCount: _messages.length,
-                        itemBuilder: (context, index) => _messages[index],
+                        itemBuilder: (context, index) => RepaintBoundary(
+                          child: _messages[index],
+                        ),
                       ),
             ),
             // ChatInput at the bottom

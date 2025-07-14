@@ -11,6 +11,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
