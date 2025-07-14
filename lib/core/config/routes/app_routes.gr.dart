@@ -73,6 +73,22 @@ class ChatViewRouteArgs {
 }
 
 /// generated route for
+/// [LanguageSettingsPage]
+class LanguageSettingsRoute extends PageRouteInfo<void> {
+  const LanguageSettingsRoute({List<PageRouteInfo>? children})
+    : super(LanguageSettingsRoute.name, initialChildren: children);
+
+  static const String name = 'LanguageSettingsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const LanguageSettingsPage();
+    },
+  );
+}
+
+/// generated route for
 /// [LoginPage]
 class LoginRoute extends PageRouteInfo<void> {
   const LoginRoute({List<PageRouteInfo>? children})

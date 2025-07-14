@@ -80,9 +80,6 @@ class _ChatViewPageState extends State<ChatViewPage>
     );
   }
 
-  void _showLogoutConfirmationDialog() {
-    LogoutDialog.show(context, () => handleLogout(_authBloc));
-  }
 
   void _onActionButtonPressed(String message) {
     _messageController.text = message;
@@ -183,25 +180,11 @@ class _ChatViewPageState extends State<ChatViewPage>
                           ),
                         ),
                         SizedBox(width: 12.w),
-                        // Profile avatar
-                        GestureDetector(
-                          onTap: _showLogoutConfirmationDialog,
-                          child: CircleAvatar(
-                            radius: 20.r,
-                            backgroundColor: const Color(0xFF00D4AA),
-                            backgroundImage:
-                                _userEmail != null && _getAvatarUrl().isNotEmpty
-                                    ? NetworkImage(_getAvatarUrl())
-                                    : null,
-                            child:
-                                _userEmail == null || _getAvatarUrl().isEmpty
-                                    ? Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                      size: 20.sp,
-                                    )
-                                    : null,
-                          ),
+                        // Profile dropdown menu
+                        ProfileDropdownMenu.create(
+                          onLogout: () => handleLogout(_authBloc),
+                          userEmail: _userEmail,
+                          avatarUrl: _getAvatarUrl(),
                         ),
                       ],
                     ),

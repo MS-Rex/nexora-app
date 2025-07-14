@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/config/routes/app_routes.dart';
+import '../../../../core/widgets/error_snackbar.dart';
 import '../../../../feature/auth/bloc/auth_bloc.dart';
 import '../../../../feature/chat/ui/bloc/chat_bloc.dart';
 import '../widgets/chat_message.dart';
@@ -38,9 +39,7 @@ mixin ChatEventHandlerMixin<T extends StatefulWidget> on State<T> {
         predicate: (route) => false,
       );
     } else if (state is AuthError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(state.message)));
+      ErrorSnackbar.show(context, state.message);
     }
   }
 
@@ -109,11 +108,7 @@ mixin ChatEventHandlerMixin<T extends StatefulWidget> on State<T> {
         if (reply != null && reply.isNotEmpty) {
           messages.insert(0, ChatMessage(text: reply, isUser: false));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Received empty response from server'),
-            ),
-          );
+          ErrorSnackbar.show(context, 'empty_response');
         }
       });
     }
@@ -126,9 +121,7 @@ mixin ChatEventHandlerMixin<T extends StatefulWidget> on State<T> {
           messages.removeAt(0);
         }
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${failureState.error}')));
+      ErrorSnackbar.show(context, failureState.error);
     }
   }
 }

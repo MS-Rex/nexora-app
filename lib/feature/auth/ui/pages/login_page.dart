@@ -9,6 +9,7 @@ import 'package:nexora/injector.dart';
 
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/widgets/error_snackbar.dart';
 import '../../../../core/localization/app_localization_extension.dart';
 import '../../../../core/localization/localization_service.dart';
 
@@ -229,9 +230,7 @@ class _LoginPageState extends State<LoginPage> {
               context.router.push(OtpVerifyRoute(email: emailController.text));
             } else if (state is AuthError) {
               // Show error snackbar
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
+              ErrorSnackbar.show(context, state.message);
             }
           }
         },
